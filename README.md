@@ -7,5 +7,5 @@ This package contains:
 # Installing dependencies
 From your workspace directory:
 ```
-rosdep install --from-paths src --ignore-src
+rosdep install --from-paths src --ignore-src -r -y
 ```
