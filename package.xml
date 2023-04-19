@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ros_tools</name>
+  <version>1.0.0</version>
+  <description>Package with tools to simplify working with ROS</description>
+
+  <maintainer email="o.m.degroot@tudelft.nl">Oscar de Groot</maintainer>
+  <author>Oscar de Groot</author>
+  <license>GPUv2</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslint</build_depend>
+  <depend>eigen_conversions</depend>
+  <depend>eigen</depend>
+  <depend>boost</depend>
+  <depend>geometry_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>roslib</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf</depend>
+  <depend>tf_conversions</depend>
+  <depend>visualization_msgs</depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  
+</package>
