@@ -9,6 +9,7 @@
 #include <random>
 #include <ros/package.h>
 #include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Float32.h>
 #include <string>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
@@ -599,6 +600,25 @@ namespace RosTools
   };
 
   inline std::string GetLMPCCDataPath() { return ros::package::getPath("lmpcc") + "/matlab_exports/data"; }
+
+  class SignalPublisher
+  {
+  public:
+    SignalPublisher(ros::NodeHandle &nh, const std::string &signal_name)
+    {
+      pub_ = nh.advertise<std_msgs::Float32>("/lmpcc/" + signal_name, 1); /* Publish the sample size when it is incorrect */
+    }
+
+    void Publish(double signal_value)
+    {
+      msg.data = signal_value;
+      pub_.publish(msg);
+    }
+
+  private:
+    ros::Publisher pub_;
+    std_msgs::Float32 msg;
+  };
 
   // Use as static to print average run time
   class Benchmarker
