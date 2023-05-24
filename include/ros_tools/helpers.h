@@ -329,6 +329,11 @@ namespace RosTools
     // static std::mt19937 random_engine_;
     // static std::uniform_int_distribution<std::mt19937::result_type> distribution_;
 
+    double Gaussian(double mean, double stddev)
+    {
+      return BivariateGaussian(Eigen::Vector2d(mean, mean), stddev, stddev, 0.)(0);
+    }
+
     Eigen::Vector2d BivariateGaussian(const Eigen::Vector2d &mean, const double major_axis, const double minor_axis, double angle)
     {
       Eigen::Matrix<double, 2, 2> A, Sigma, R, SVD;
@@ -597,6 +602,17 @@ namespace RosTools
     }
 
     line.addLine(p1, p2);
+  };
+
+  inline void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, double r = 0, double g = 1, double b = 0)
+  {
+
+    for (auto &halfspace : halfspaces)
+    {
+      ROSLine &line = ros_markers.getNewLine();
+      line.setColorInt(0, 1.);
+      drawLine(line, halfspace.A_[0], halfspace.A_[1], halfspace.b_);
+    }
   };
 
   inline std::string GetLMPCCDataPath() { return ros::package::getPath("lmpcc") + "/matlab_exports/data"; }
