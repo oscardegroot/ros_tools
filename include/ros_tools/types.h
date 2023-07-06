@@ -1,6 +1,8 @@
 #ifndef __ROSTOOLS_TYPES_H__
 #define __ROSTOOLS_TYPES_H__
 
+#include <Eigen/Dense>
+
 namespace RosTools
 {
 

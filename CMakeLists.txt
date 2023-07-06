@@ -41,9 +41,11 @@ include_directories(include
 
 add_library(ros_tools
   src/ros_visuals.cpp
+  src/helpers.cpp
+  src/profiling.cpp
+  src/data_saver.cpp
   scripts/
 )
-
 add_dependencies(ros_tools ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # ## Test Case ####
