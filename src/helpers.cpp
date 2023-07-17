@@ -278,7 +278,7 @@ namespace RosTools
         // Constraint in z
         if (std::abs(a1) < 1e-3 && std::abs(a2) < 1e-3)
         {
-            ROS_WARN("Invalid constraint ignored during visualisation!");
+            ROS_WARN_THROTTLE(5.0, "Invalid constraint ignored during visualisation!");
             return;
         }
 

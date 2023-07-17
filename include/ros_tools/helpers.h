@@ -18,6 +18,7 @@
 #include <string>
 #include <fstream>
 #include <random>
+#include <chrono>
 
 /** Logging Pragmas */
 #define ROSTOOLS_HOOK std::cout << __FILE__ << " Line " << __LINE__ << std::endl;
