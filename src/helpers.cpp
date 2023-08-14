@@ -333,6 +333,36 @@ namespace RosTools
         pub_.publish(msg);
     }
 
+    StatusPublisher::StatusPublisher(ros::NodeHandle &nh, const std::string &&topic)
+    {
+        pub_ = nh.advertise<jsk_rviz_plugins::OverlayText>(topic, 1); /* Publish the sample size when it is incorrect */
+    }
+
+    void StatusPublisher::Publish(const std::string &&status)
+    {
+        msg_.text = status;
+        Publish();
+    }
+    void StatusPublisher::Publish()
+    {
+        // Show a message on the screen
+        msg_.action = 0;
+        msg_.width = 100;
+        msg_.height = 20;
+        // msg_.left = 10;
+        // msg_.top = 80;
+        msg_.bg_color.a = 0.;
+        msg_.line_width = 2;
+        msg_.text_size = 12.0;
+        msg_.font = "DejaVu Sans Mono";
+        msg_.fg_color.r = 0.098;
+        msg_.fg_color.g = 0.94;
+        msg_.fg_color.b = 0.94;
+        msg_.fg_color.a = 1.0;
+
+        pub_.publish(msg_);
+    }
+
     Benchmarker::Benchmarker(const std::string &name, bool record_duration, int ignore_first)
     {
         name_ = name;

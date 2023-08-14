@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf_conversions
   visualization_msgs
+  jsk_rviz_plugins
 )
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread)

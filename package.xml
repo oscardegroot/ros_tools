@@ -21,6 +21,7 @@
   <depend>tf</depend>
   <depend>tf_conversions</depend>
   <depend>visualization_msgs</depend>
+  <depend>jsk_rviz_plugins</depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rviz</exec_depend>
   

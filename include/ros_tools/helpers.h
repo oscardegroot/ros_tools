@@ -5,6 +5,7 @@
 #include <ros/package.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Float32.h>
+#include <jsk_rviz_plugins/OverlayText.h>
 
 #include <geometry_msgs/Pose.h>
 #include <tf/transform_listener.h>
@@ -293,6 +294,21 @@ namespace RosTools
   private:
     ros::Publisher pub_;
     std_msgs::Float32 msg;
+  };
+
+  class StatusPublisher
+  {
+  public:
+    StatusPublisher(ros::NodeHandle &nh, const std::string &&topic);
+    // void SetStatus(const std::string &&status);
+    // void SetStatus(const std::string &status);
+
+    void Publish(const std::string &&status);
+    void Publish();
+
+  private:
+    ros::Publisher pub_;
+    jsk_rviz_plugins::OverlayText msg_;
   };
 
   // Use as static to print average run time
