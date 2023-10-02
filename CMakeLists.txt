@@ -91,6 +91,12 @@ install(TARGETS example
     DESTINATION lib/${PROJECT_NAME}
 )
 
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+  
+install(DIRECTORY rviz
+  DESTINATION share/${PROJECT_NAME})
+
 ## Package
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)

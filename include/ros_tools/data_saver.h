@@ -23,7 +23,7 @@ data_saver_test.SaveData("export_1");
 
 #include <boost/filesystem.hpp>
 
-#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <ros2_wrappers.h>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -58,8 +58,8 @@ namespace RosTools
     int num_entries_;
 
   public:
-    virtual void AddData(const double &value){std::cout << value << std::endl;}
-    virtual void AddData(const Eigen::Vector2d &value){std::cout << value << std::endl;}
+    virtual void AddData(const double &value) { std::cout << value << std::endl; }
+    virtual void AddData(const Eigen::Vector2d &value) { std::cout << value << std::endl; }
 
     virtual void SaveData(std::ofstream &file) = 0;
 
@@ -196,7 +196,7 @@ namespace RosTools
     template <class T>
     bool LoadData(const std::string &file_name, std::map<std::string, std::vector<T>> &result)
     {
-      const std::string path = ament_index_cpp::get_package_share_directory("lmpcc") + "/matlab_exports/data";
+      const std::string path = GetPackagePath("lmpcc") + "/matlab_exports/data";
       return LoadData(path, file_name, result);
     }
 

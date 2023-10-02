@@ -1,0 +1,10 @@
+<!-- example.launch.xml -->
+
+<launch>
+
+  <!-- start a turtlesim_node in the turtlesim1 namespace -->
+  <node pkg="ros_tools" exec="example" name="example" namespace="/"/>
+
+  <node pkg="rviz2" exec="rviz2" name="rviz2" args="-d $(find-pkg-share ros_tools)/rviz/example.rviz" namespace="/"/>
+ 
+</launch>
