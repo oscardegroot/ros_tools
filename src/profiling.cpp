@@ -1,5 +1,6 @@
 #include <ros_tools/profiling.h>
-#include <ros_tools/ros2_wrappers.h>
+
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include <algorithm>
 
@@ -9,7 +10,7 @@ namespace RosTools
     void Instrumentor::BeginSession(const std::string &name, const std::string &filepath)
     {
         // std::string full_filepath =  ament_index_cpp::get_package_share_directory(name) + "/" + filepath;
-        std::string full_filepath = GetPackagePath(name) + "/" + filepath;
+        std::string full_filepath = ament_index_cpp::get_package_share_directory(name) + "/" + filepath;
         std::cout << full_filepath << std::endl;
         m_OutputStream.open(full_filepath);
         WriteHeader();

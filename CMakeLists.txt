@@ -25,7 +25,7 @@ find_package(tf2_ros REQUIRED)
 find_package(visualization_msgs REQUIRED)
 # find_package(jsk_rviz_plugins REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS filesystem thread)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -41,6 +41,7 @@ add_definitions(${EIGEN_DEFINITIONS})
 # ## BUILD ###
 include_directories(include
   ${EIGEN_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
   include/${PROJECT_NAME}
   scripts/risk-eval-cpp
 )
@@ -75,7 +76,10 @@ add_executable(example
   src/example.cpp
 )
 
-target_link_libraries(example ros_tools)
+target_link_libraries(example 
+  ros_tools
+  ${Boost_LIBRARIES}
+)
 
 ## Install
 

@@ -88,7 +88,7 @@ namespace RosTools
 
     void DataSaver::SaveData(const std::string &file_name)
     {
-        std::string path = ament_index_cpp::get_package_share_directory("lmpcc_tools") + "/scripts/data";
+        std::string path = ament_index_cpp::get_package_share_directory("ros_tools") + "/scripts/data";
         SaveData(path, file_name);
     }
 
