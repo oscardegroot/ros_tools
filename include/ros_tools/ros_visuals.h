@@ -1,17 +1,20 @@
 #ifndef ROS_VISUALS_H
 #define ROS_VISUALS_H
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <Eigen/Core>
-#include <tf/tf.h>
+#include <tf2/LinearMath/Quaternion.h>
 
 // Visualization messages
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+#include "visualization_msgs/msg/marker.hpp"
+#include <visualization_msgs/msg/marker_array.hpp>
 
+#include <memory>
 #include <string>
 
 namespace RosTools{
+
+
 
 class ROSMarker;
 class ROSLine;
@@ -31,16 +34,16 @@ class ROSMarkerPublisher
 {
 
 public:
-    ROSMarkerPublisher(ros::NodeHandle &nh, const char *topic_name, const std::string &frame_id, int max_size);
+    ROSMarkerPublisher(rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size);
     ~ROSMarkerPublisher();
 
 private:
     // One publisher
-    ros::Publisher pub_;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_;
 
     // One marker list
-    visualization_msgs::MarkerArray marker_list_;
-    visualization_msgs::MarkerArray prev_marker_list_;
+    visualization_msgs::msg::MarkerArray marker_list_;
+    visualization_msgs::msg::MarkerArray prev_marker_list_;
 
     // a set of ros_markers
     std::vector<std::unique_ptr<ROSMarker>> ros_markers_;
@@ -51,7 +54,7 @@ private:
     int max_size_;
 
 public:
-    void add(const visualization_msgs::Marker &marker);
+    void add(const visualization_msgs::msg::Marker &marker);
 
     ROSLine &getNewLine();
     ROSPointMarker &getNewPointMarker(const std::string &marker_type);
@@ -77,11 +80,11 @@ public:
 protected:
     static std::vector<double> VIRIDIS_, INFERNO_, BRUNO_;
 
-    visualization_msgs::Marker marker_;
+    visualization_msgs::msg::Marker marker_;
 
     ROSMarkerPublisher *ros_publisher_;
 
-    geometry_msgs::Point vecToPoint(const Eigen::Vector3d &v);
+    geometry_msgs::msg::Point vecToPoint(const Eigen::Vector3d &v);
 
     std::vector<double> &getColors(const Colormap &colormap);
 
@@ -100,8 +103,8 @@ public:
     void setScale(double x, double y);
     void setScale(double x);
     void setOrientation(double psi);
-    void setOrientation(const geometry_msgs::Quaternion &msg);
-    void setOrientation(const tf::Quaternion &q);
+    void setOrientation(const geometry_msgs::msg::Quaternion &msg);
+    void setOrientation(const tf2::Quaternion &q);
     void setLifetime(double lifetime);
 
     void setActionDelete();
@@ -118,10 +121,10 @@ public:
     ROSLine(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
     void addLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2);
-    void addLine(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2);
+    void addLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2);
 
     void addBrokenLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double dist);
-    void addBrokenLine(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2, double dist);
+    void addBrokenLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2, double dist);
 };
 
 class ROSPointMarker : public ROSMarker
@@ -131,8 +134,8 @@ public:
     ROSPointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &marker_type);
 
     void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::Point &p1);
-    void addPointMarker(const geometry_msgs::Pose &pose);
+    void addPointMarker(const geometry_msgs::msg::Point &p1);
+    void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
     void setZ(double z);
 
@@ -149,8 +152,8 @@ public:
     ROSMultiplePointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &type);
 
     void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::Point &p1);
-    void addPointMarker(const geometry_msgs::Pose &pose);
+    void addPointMarker(const geometry_msgs::msg::Point &p1);
+    void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
     void finishPoints();
 
@@ -165,8 +168,8 @@ public:
     ROSTextMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
     void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::Point &p1);
-    void addPointMarker(const geometry_msgs::Pose &pose);
+    void addPointMarker(const geometry_msgs::msg::Point &p1);
+    void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
     void setZ(double z);
     void setText(const std::string &text);
@@ -186,8 +189,8 @@ public:
     ROSModelMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &model_path);
 
     void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::Point &p1);
-    void addPointMarker(const geometry_msgs::Pose &pose);
+    void addPointMarker(const geometry_msgs::msg::Point &p1);
+    void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
 private:
 };

@@ -2,13 +2,14 @@
 #ifndef ROSTOOLS_HELPERS_H
 #define ROSTOOLS_HELPERS_H
 
-#include <ros/package.h>
-#include <std_msgs/Float64MultiArray.h>
-#include <std_msgs/Float32.h>
-#include <jsk_rviz_plugins/OverlayText.h>
+#include <std_msgs/msg/float64_multi_array.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <std_msgs/msg/empty.hpp>
+// #include <jsk_rviz_plugins/OverlayText.h>
 
-#include <geometry_msgs/Pose.h>
-#include <tf/transform_listener.h>
+#include <geometry_msgs/msg/pose.hpp>
+
+#include <tf2_ros/transform_listener.h>
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/normal_distribution.hpp>
@@ -73,6 +74,8 @@ namespace Eigen
 
 namespace RosTools
 {
+  static const rclcpp::Logger HELPERS_LOGGER = rclcpp::get_logger("ros_tools.helpers");
+
   typedef std::vector<std::vector<Eigen::VectorXd>> trajectory_sample; // location per obstacle and time step
 
   // Forward declarations
@@ -206,7 +209,7 @@ namespace RosTools
 
     void PrintUpdate(int bound, const SupportSubsample &removed, int removed_bound, int iterations)
     {
-      ROS_INFO_STREAM("SQP (" << iterations << "): Support = " << support_subsample_size_ << "/" << bound
+      RCLCPP_INFO_STREAM(HELPERS_LOGGER, "SQP (" << iterations << "): Support = " << support_subsample_size_ << "/" << bound
                               << " - Removed: " << removed.support_subsample_size_ << "/" << removed_bound);
     }
   };
@@ -274,28 +277,29 @@ namespace RosTools
 
   double Bisection(double low, double high, std::function<double(double)> func, double tol = 1e-3);
 
-  geometry_msgs::Quaternion angleToQuaternion(double angle);
+  geometry_msgs::msg::Quaternion angleToQuaternion(double angle);
 
-  double quaternionToAngle(const geometry_msgs::Pose &pose);
-  double quaternionToAngle(geometry_msgs::Quaternion q);
+  double quaternionToAngle(const geometry_msgs::msg::Pose &pose);
+  double quaternionToAngle(geometry_msgs::msg::Quaternion q);
 
-  bool transformPose(tf::TransformListener &tf_listener_, const std::string &from, const std::string &to, geometry_msgs::Pose &pose);
+  // bool transformPose(tf2_ros::TransformListener &tf_listener_, const std::string &from, const std::string &to, geometry_msgs::msg::Pose &pose);
 
   void DrawPoint(ROSMarkerPublisher &ros_markers, const Eigen::Vector2d &point);
   void DrawLine(ROSLine &line, double a1, double a2, double b, double line_length = 100.);
-  void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, double r = 0, double g = 1, double b = 0);
+  void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, int idx);
 
   class SignalPublisher
   {
   public:
-    SignalPublisher(ros::NodeHandle &nh, const std::string &signal_name);
+    SignalPublisher(rclcpp::Node::SharedPtr node, const std::string &signal_name);
     void Publish(double signal_value);
 
   private:
-    ros::Publisher pub_;
-    std_msgs::Float32 msg;
+    rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr pub_;
+    std_msgs::msg::Float32 msg;
   };
 
+  /** @note: Not compatible with ROS2
   class StatusPublisher
   {
   public:
@@ -309,7 +313,7 @@ namespace RosTools
   private:
     ros::Publisher pub_;
     jsk_rviz_plugins::OverlayText msg_;
-  };
+  };*/
 
   // Use as static to print average run time
   class Benchmarker
@@ -328,7 +332,7 @@ namespace RosTools
     double stop();
     void reset();
 
-    void dataToMessage(std_msgs::Float64MultiArray &msg);
+    void dataToMessage(std_msgs::msg::Float64MultiArray &msg);
 
     bool isRunning() const { return running_; };
 
@@ -386,16 +390,16 @@ namespace RosTools
   class SimulationTool
   {
   public:
-    SimulationTool(const std::string &topic, double min_time_between, int max_experiments);
+    SimulationTool(rclcpp::Node::SharedPtr node, const std::string &topic, double min_time_between, int max_experiments);
 
   public:
-    void ResetCallback(const std_msgs::Empty &msg);
+    void ResetCallback(const std_msgs::msg::Empty &msg);
 
     bool Finished() const { return finished_; };
 
   private:
-    ros::NodeHandle nh_;
-    ros::Subscriber reset_sub_;
+    rclcpp::Node::SharedPtr node_;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr reset_sub_;
 
     int counter_;
     int max_experiments_;

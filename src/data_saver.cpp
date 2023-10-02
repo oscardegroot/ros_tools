@@ -88,7 +88,7 @@ namespace RosTools
 
     void DataSaver::SaveData(const std::string &file_name)
     {
-        std::string path = ros::package::getPath("lmpcc_tools") + "/scripts/data";
+        std::string path = ament_index_cpp::get_package_share_directory("lmpcc_tools") + "/scripts/data";
         SaveData(path, file_name);
     }
 
@@ -100,7 +100,7 @@ namespace RosTools
         std::string folder_path = complete_file_path.substr(0, complete_file_path.rfind("/"));
 
         if (boost::filesystem::create_directories(folder_path))
-            ROS_INFO_STREAM("Data Saver: Creating Directory Path: " << folder_path);
+            RCLCPP_INFO_STREAM(DATA_SAVE_LOGGER, "Data Saver: Creating Directory Path: " << folder_path);
 
         std::string full_file_path;
         if (add_timestamp_)
@@ -132,7 +132,7 @@ namespace RosTools
         // Setup a file stream
         std::ofstream export_file;
 
-        ROS_INFO_STREAM("Data Saver: Saving collected data in " << full_file_path);
+        RCLCPP_INFO_STREAM(DATA_SAVE_LOGGER, "Data Saver: Saving collected data in " << full_file_path);
 
         export_file.open(full_file_path);
 
@@ -164,11 +164,11 @@ namespace RosTools
 
         std::ifstream import_file(full_file_path);
 
-        ROS_INFO_STREAM("Data Saver: Loading data from " << full_file_path);
+        RCLCPP_INFO_STREAM(DATA_SAVE_LOGGER, "Data Saver: Loading data from " << full_file_path);
 
         if (!import_file.good())
         {
-            ROS_WARN("Data Saver: No file with this name was found.");
+            RCLCPP_WARN(DATA_SAVE_LOGGER, "Data Saver: No file with this name was found.");
             return false;
         }
 

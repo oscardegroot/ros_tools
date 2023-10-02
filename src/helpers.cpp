@@ -3,6 +3,8 @@
 #include <ros_tools/types.h>
 #include <ros_tools/ros_visuals.h>
 
+#include <geometry_msgs/msg/pose_stamped.hpp>
+
 namespace RosTools
 {
 
@@ -174,10 +176,12 @@ namespace RosTools
         throw std::runtime_error("Safety Certifier: Bisection failed!");
     }
 
-    geometry_msgs::Quaternion angleToQuaternion(double angle)
+    geometry_msgs::msg::Quaternion angleToQuaternion(double angle)
     {
-        tf::Quaternion q = tf::createQuaternionFromRPY(0., 0., angle);
-        geometry_msgs::Quaternion result;
+        tf2::Quaternion q;
+        q.setRPY(0, 0, angle);
+
+        geometry_msgs::msg::Quaternion result;
         result.x = q.getX();
         result.y = q.getY();
         result.z = q.getZ();
@@ -186,7 +190,7 @@ namespace RosTools
         return result;
     }
 
-    double quaternionToAngle(const geometry_msgs::Pose &pose)
+    double quaternionToAngle(const geometry_msgs::msg::Pose &pose)
     {
         double ysqr = pose.orientation.y * pose.orientation.y;
         double t3 = +2.0 * (pose.orientation.w * pose.orientation.z + pose.orientation.x * pose.orientation.y);
@@ -195,7 +199,7 @@ namespace RosTools
         return atan2(t3, t4);
     }
 
-    double quaternionToAngle(geometry_msgs::Quaternion q)
+    double quaternionToAngle(geometry_msgs::msg::Quaternion q)
     {
         double ysqr, t3, t4;
 
@@ -206,13 +210,14 @@ namespace RosTools
         return std::atan2(t3, t4);
     }
 
-    bool transformPose(tf::TransformListener &tf_listener_, const std::string &from, const std::string &to, geometry_msgs::Pose &pose)
+    /** @todo: Translate to ROS2
+    
+    bool transformPose(tf2_ros::TransformListener &tf_listener_, const std::string &from, const std::string &to, geometry_msgs::msg::Pose &pose)
     {
         bool transform = false;
-        tf::StampedTransform stamped_tf;
 
         // ROS_DEBUG_STREAM("Transforming from :" << from << " to: " << to);
-        geometry_msgs::PoseStamped stampedPose_in, stampedPose_out;
+        geometry_msgs::msg::PoseStamped stampedPose_in, stampedPose_out;
         stampedPose_in.pose = pose;
 
         if (std::sqrt(std::pow(pose.orientation.x, 2) + std::pow(pose.orientation.y, 2) + std::pow(pose.orientation.z, 2) +
@@ -244,14 +249,14 @@ namespace RosTools
         }
         else
         {
-            ROS_WARN("MPCC::getTransform: '%s' or '%s' frame doesn't exist, pass existing frame", from.c_str(), to.c_str());
+            RCLCPP_WARN(HELPERS_LOGGER, ("MPCC::getTransform: '%s' or '%s' frame doesn't exist, pass existing frame", from.c_str(), to.c_str());
             if (!tf_listener_.frameExists(to))
             {
-                ROS_WARN("%s doesn't exist", to.c_str());
+                RCLCPP_WARN(HELPERS_LOGGER, ("%s doesn't exist", to.c_str());
             }
             if (!tf_listener_.frameExists(from))
             {
-                ROS_WARN("%s doesn't exist", from.c_str());
+                RCLCPP_WARN(HELPERS_LOGGER, ("%s doesn't exist", from.c_str());
             }
         }
         pose = stampedPose_out.pose;
@@ -259,7 +264,7 @@ namespace RosTools
         stampedPose_in.header.frame_id = to;
 
         return transform;
-    }
+    }*/
 
     void DrawPoint(ROSMarkerPublisher &ros_markers, const Eigen::Vector2d &point)
     {
@@ -278,11 +283,11 @@ namespace RosTools
         // Constraint in z
         if (std::abs(a1) < 1e-3 && std::abs(a2) < 1e-3)
         {
-            ROS_WARN_THROTTLE(5.0, "Invalid constraint ignored during visualisation!");
+            RCLCPP_WARN_ONCE(HELPERS_LOGGER, "Invalid constraint ignored during visualisation! (this warning appears once!)");
             return;
         }
 
-        geometry_msgs::Point p1, p2;
+        geometry_msgs::msg::Point p1, p2;
         double z = 0.;
 
         // If we cant draw in one direction, draw in the other
@@ -311,31 +316,31 @@ namespace RosTools
         line.addLine(p1, p2);
     };
 
-    void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, double r, double g, double b)
+    void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, int idx)
     {
 
         for (auto &halfspace : halfspaces)
         {
             ROSLine &line = ros_markers.getNewLine();
-            line.setColorInt(0, 1.);
+            line.setColorInt(idx);
             DrawLine(line, halfspace.A_[0], halfspace.A_[1], halfspace.b_);
         }
     };
 
-    SignalPublisher::SignalPublisher(ros::NodeHandle &nh, const std::string &signal_name)
+    SignalPublisher::SignalPublisher(rclcpp::Node::SharedPtr node, const std::string &signal_name)
     {
-        pub_ = nh.advertise<std_msgs::Float32>("/lmpcc/" + signal_name, 1); /* Publish the sample size when it is incorrect */
+        pub_ = node->create_publisher<std_msgs::msg::Float32>("/lmpcc/" + signal_name, 1);
     }
 
     void SignalPublisher::Publish(double signal_value)
     {
         msg.data = signal_value;
-        pub_.publish(msg);
+        pub_->publish(msg);
     }
 
-    StatusPublisher::StatusPublisher(ros::NodeHandle &nh, const std::string &&topic)
+    /*StatusPublisher::StatusPublisher(ros::NodeHandle &nh, const std::string &&topic)
     {
-        pub_ = nh.advertise<jsk_rviz_plugins::OverlayText>(topic, 1); /* Publish the sample size when it is incorrect */
+        pub_ = nh.advertise<jsk_rviz_plugins::OverlayText>(topic, 1);
     }
 
     void StatusPublisher::Publish(const std::string &&status)
@@ -361,7 +366,7 @@ namespace RosTools
         msg_.fg_color.a = 1.0;
 
         pub_.publish(msg_);
-    }
+    }*/
 
     Benchmarker::Benchmarker(const std::string &name, bool record_duration, int ignore_first)
     {
@@ -427,7 +432,7 @@ namespace RosTools
         return last_;
     }
 
-    void Benchmarker::dataToMessage(std_msgs::Float64MultiArray &msg)
+    void Benchmarker::dataToMessage(std_msgs::msg::Float64MultiArray &msg)
     {
         msg.data.resize(duration_list_.size());
 
@@ -482,21 +487,22 @@ namespace RosTools
         return current_duration.count() >= duration_;
     }
 
-    SimulationTool::SimulationTool(const std::string &topic, double min_time_between, int max_experiments) : max_experiments_(max_experiments)
+    SimulationTool::SimulationTool(rclcpp::Node::SharedPtr node, const std::string &topic, double min_time_between, int max_experiments) : max_experiments_(max_experiments)
     {
         counter_ = 0;
         finished_ = false;
-        reset_sub_ = nh_.subscribe(topic.c_str(), 1, &SimulationTool::ResetCallback, this);
+        node_ = node;
+        reset_sub_ = node->create_subscription<std_msgs::msg::Empty>(topic.c_str(), 1, std::bind(&SimulationTool::ResetCallback, this, std::placeholders::_1));
         timer_.reset(new TriggeredTimer(min_time_between));
         timer_->start();
     }
 
-    void SimulationTool::ResetCallback(const std_msgs::Empty &msg)
+    void SimulationTool::ResetCallback(const std_msgs::msg::Empty &msg)
     {
         // Was this the last simulation (noting that the system is reset initially)
         if (counter_ >= max_experiments_)
         {
-            ROS_ERROR_STREAM("Simulation Tool: Done with " << max_experiments_ << " experiments!");
+            RCLCPP_ERROR_STREAM(HELPERS_LOGGER, "Simulation Tool: Done with " << max_experiments_ << " experiments!");
             finished_ = true;
         }
 
@@ -504,7 +510,7 @@ namespace RosTools
         if (timer_->hasFinished())
         {
             counter_++;
-            ROS_WARN_STREAM("\033[34;47mSimulation Tool: === Experiment " << counter_ << " / " << max_experiments_ << " ===\033[m");
+            RCLCPP_WARN_STREAM(HELPERS_LOGGER, "\033[34;47mSimulation Tool: === Experiment " << counter_ << " / " << max_experiments_ << " ===\033[m");
         }
     }
 

@@ -1,5 +1,5 @@
-#ifndef __PROFILING_H__
-#define __PROFILING_H__
+#ifndef __ROSTOOLS_PROFILING_H__
+#define __ROSTOOLS_PROFILING_H__
 
 #include <fstream>
 #include <thread>
@@ -78,4 +78,4 @@ namespace RosTools
         bool m_Stopped;
     };
 };
-#endif // __PROFILING_H__
+#endif // __ROSTOOLS_PROFILING_H__

@@ -13,7 +13,7 @@
 #define __BASE_CONFIGURATION_H__
 
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <string>
 
 namespace RosTools{

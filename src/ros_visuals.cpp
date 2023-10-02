@@ -2,6 +2,8 @@
 
 namespace RosTools
 {
+    static const rclcpp::Logger LOGGER = rclcpp::get_logger("ros_tools.ros_visuals");
+
 
     std::vector<double> ROSMarker::VIRIDIS_ = {253, 231, 37, 234, 229, 26, 210, 226, 27, 186, 222, 40, 162, 218, 55, 139, 214, 70, 119, 209, 83, 99, 203, 95, 80, 196, 106, 63, 188, 115, 49, 181, 123, 38, 173, 129, 33, 165, 133, 30, 157, 137, 31, 148, 140, 34, 140, 141, 37, 131, 142, 41, 123, 142, 44, 115, 142, 47, 107, 142, 51, 98, 141, 56, 89, 140};
     std::vector<double> ROSMarker::INFERNO_ = {252, 255, 164, 241, 237, 113, 246, 213, 67, 251, 186, 31, 252, 161, 8, 248, 135, 14, 241, 113, 31, 229, 92, 48, 215, 75, 63, 196, 60, 78, 177, 50, 90, 155, 41, 100, 135, 33, 107, 113, 25, 110, 92, 18, 110, 69, 10, 105, 47, 10, 91, 24, 12, 60};
@@ -9,11 +11,11 @@ namespace RosTools
     // marker_list_ holds the rosmarkers to draw
     // ros_markers_ is the list of ROSMarker objects defined in this file
 
-    ROSMarkerPublisher::ROSMarkerPublisher(ros::NodeHandle &nh, const char *topic_name, const std::string &frame_id, int max_size) : frame_id_(frame_id),
+    ROSMarkerPublisher::ROSMarkerPublisher(rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size) : frame_id_(frame_id),
                                                                                                                                      max_size_(max_size)
     {
 
-        pub_ = nh.advertise<visualization_msgs::MarkerArray>(topic_name, 3);
+        pub_ = node->create_publisher<visualization_msgs::msg::MarkerArray>(topic_name, 3);
         id_ = 0;
         prev_id_ = 0;
 
@@ -27,12 +29,12 @@ namespace RosTools
         // for (int i = 0; i < max_size; i++)
         // {
         //     marker_list_.markers[i].id = i;
-        //     // marker_list_.markers[i].action = visualization_msgs::Marker::DELETE;
+        //     // marker_list_.markers[i].action = visualization_msgs::msg::Marker::DELETE;
         //     marker_list_.markers[i].header.frame_id = frame_id_;
         // }
     }
 
-    void ROSMarkerPublisher::add(const visualization_msgs::Marker &marker)
+    void ROSMarkerPublisher::add(const visualization_msgs::msg::Marker &marker)
     {
 
         if (marker.id > max_size_ - 1)
@@ -40,7 +42,7 @@ namespace RosTools
             double prev_size = max_size_;
             // If we exceed the max size, allocate 1.5 times the space and give an error
             max_size_ = std::ceil(max_size_ * 1.5);
-            ROS_WARN_STREAM("ROS VISUALS (topic = " << topic_name_ << "): exceeded max size of " << prev_size << ". New size: " << max_size_);
+            RCLCPP_WARN_STREAM(LOGGER, "ROS VISUALS (topic = " << topic_name_ << "): exceeded max size of " << prev_size << ". New size: " << max_size_);
 
             marker_list_.markers.reserve(max_size_);
         }
@@ -109,8 +111,8 @@ namespace RosTools
     void ROSMarkerPublisher::publish(bool keep_markers)
     {
         // If less markers are published, remove the extra markers explicitly
-        visualization_msgs::Marker remove_marker_;
-        remove_marker_.action = visualization_msgs::Marker::DELETE;
+        visualization_msgs::msg::Marker remove_marker_;
+        remove_marker_.action = visualization_msgs::msg::Marker::DELETE;
         remove_marker_.header.frame_id = frame_id_;
 
         if (prev_id_ > id_)
@@ -126,7 +128,7 @@ namespace RosTools
         for (std::unique_ptr<ROSMarker> &marker : ros_markers_)
             marker->stamp();
 
-        pub_.publish(marker_list_);
+        pub_->publish(marker_list_);
 
         if (!keep_markers)
         {
@@ -141,15 +143,15 @@ namespace RosTools
 
     ROSMarkerPublisher::~ROSMarkerPublisher()
     {
-        // for (visualization_msgs::Marker &marker : prev_marker_list_.markers)
+        // for (visualization_msgs::msg::Marker &marker : prev_marker_list_.markers)
         // {
-        //     marker.action = visualization_msgs::Marker::DELETE;
+        //     marker.action = visualization_msgs::msg::Marker::DELETE;
         // }
 
-        // pub_.publish(prev_marker_list_);
+        // pub_->publish(prev_marker_list_);
 
-        visualization_msgs::Marker remove_marker_;
-        remove_marker_.action = visualization_msgs::Marker::DELETE;
+        visualization_msgs::msg::Marker remove_marker_;
+        remove_marker_.action = visualization_msgs::msg::Marker::DELETE;
         remove_marker_.header.frame_id = frame_id_;
 
         // Remove all markers
@@ -160,7 +162,7 @@ namespace RosTools
             remove_marker_.id = i;
             marker_list_.markers.push_back(remove_marker_);
         }
-        pub_.publish(marker_list_);
+        pub_->publish(marker_list_);
     }
 
     int ROSMarkerPublisher::getID()
@@ -180,7 +182,7 @@ namespace RosTools
 
     void ROSMarker::stamp()
     {
-        marker_.header.stamp = ros::Time::now();
+        marker_.header.stamp = rclcpp::Clock().now();
     }
 
     void ROSMarker::setColor(double r, double g, double b, double alpha)
@@ -244,19 +246,20 @@ namespace RosTools
     void ROSMarker::setOrientation(double psi)
     {
 
-        tf::Quaternion q = tf::createQuaternionFromRPY(0, 0, psi);
+        tf2::Quaternion q;
+        q.setRPY(0, 0, psi);
         setOrientation(q);
     }
 
-    void ROSMarker::setOrientation(const geometry_msgs::Quaternion &msg)
+    void ROSMarker::setOrientation(const geometry_msgs::msg::Quaternion &msg)
     {
 
-        tf::Quaternion q;
-        tf::quaternionMsgToTF(msg, q);
+        tf2::Quaternion q(msg.x, msg.y, msg.z, msg.w);
+        // tf2::quaternionMsgToTF(msg, q);
         setOrientation(q);
     }
 
-    void ROSMarker::setOrientation(const tf::Quaternion &q)
+    void ROSMarker::setOrientation(const tf2::Quaternion &q)
     {
         marker_.pose.orientation.x = q.x();
         marker_.pose.orientation.y = q.y();
@@ -267,18 +270,18 @@ namespace RosTools
     void ROSMarker::setLifetime(double lifetime)
     {
 
-        marker_.lifetime = ros::Duration(lifetime);
+        marker_.lifetime = rclcpp::Duration::from_seconds(lifetime);
     }
 
     void ROSMarker::setActionDelete()
     {
 
-        marker_.action = visualization_msgs::Marker::DELETE;
+        marker_.action = visualization_msgs::msg::Marker::DELETE;
     }
 
-    geometry_msgs::Point ROSMarker::vecToPoint(const Eigen::Vector3d &v)
+    geometry_msgs::msg::Point ROSMarker::vecToPoint(const Eigen::Vector3d &v)
     {
-        geometry_msgs::Point p;
+        geometry_msgs::msg::Point p;
         p.x = v(0);
         p.y = v(1);
         p.z = v(2);
@@ -376,7 +379,7 @@ namespace RosTools
         : ROSMarker(ros_publisher, frame_id)
     {
 
-        marker_.type = visualization_msgs::Marker::LINE_LIST;
+        marker_.type = visualization_msgs::msg::Marker::LINE_LIST;
 
         // LINE_STRIP/LINE_LIST markers use only the x component of scale, for the line width
         marker_.scale.x = 0.5;
@@ -397,7 +400,7 @@ namespace RosTools
         addLine(vecToPoint(p1), vecToPoint(p2));
     }
 
-    void ROSLine::addLine(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2)
+    void ROSLine::addLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2)
     {
 
         // Request an ID
@@ -420,7 +423,7 @@ namespace RosTools
     }
 
     // Not perfect, but good enough
-    void ROSLine::addBrokenLine(const geometry_msgs::Point &p1, const geometry_msgs::Point &p2, double dist)
+    void ROSLine::addBrokenLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2, double dist)
     {
         // Interpolate the points, ensure 0.5 of the broken line at both sides!
         double dpoints = std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2) + std::pow(p1.z - p2.z, 2));
@@ -431,10 +434,10 @@ namespace RosTools
 
         Eigen::Vector3d dir_vec = Eigen::Vector3d(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z).normalized();
 
-        geometry_msgs::Point cur_p = p1;
+        geometry_msgs::msg::Point cur_p = p1;
         for (int i = 0; i < num_elements + 1; i++) // The first line is split in an end and start
         {
-            geometry_msgs::Point next_p;
+            geometry_msgs::msg::Point next_p;
 
             if (i == 0 || i == num_elements)
             {
@@ -473,7 +476,7 @@ namespace RosTools
         marker_.pose.orientation.w = 1.0;
     }
 
-    void ROSPointMarker::addPointMarker(const geometry_msgs::Pose &pose)
+    void ROSPointMarker::addPointMarker(const geometry_msgs::msg::Pose &pose)
     {
         // Request an ID
         marker_.id = ros_publisher_->getID();
@@ -490,7 +493,7 @@ namespace RosTools
         addPointMarker(vecToPoint(p1));
     }
 
-    void ROSPointMarker::addPointMarker(const geometry_msgs::Point &p1)
+    void ROSPointMarker::addPointMarker(const geometry_msgs::msg::Point &p1)
     {
 
         // Request an ID
@@ -511,17 +514,17 @@ namespace RosTools
     {
 
         if (marker_type == "CUBE")
-            return visualization_msgs::Marker::CUBE;
+            return visualization_msgs::msg::Marker::CUBE;
         if (marker_type == "ARROW")
-            return visualization_msgs::Marker::ARROW;
+            return visualization_msgs::msg::Marker::ARROW;
         if (marker_type == "SPHERE")
-            return visualization_msgs::Marker::SPHERE;
+            return visualization_msgs::msg::Marker::SPHERE;
         if (marker_type == "POINTS")
-            return visualization_msgs::Marker::POINTS;
+            return visualization_msgs::msg::Marker::POINTS;
         if (marker_type == "CYLINDER")
-            return visualization_msgs::Marker::CYLINDER;
+            return visualization_msgs::msg::Marker::CYLINDER;
 
-        return visualization_msgs::Marker::CUBE;
+        return visualization_msgs::msg::Marker::CUBE;
     }
 
     ROSMultiplePointMarker::ROSMultiplePointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &type = "POINTS")
@@ -542,14 +545,14 @@ namespace RosTools
         marker_.pose.orientation.w = 1.0;
     }
 
-    void ROSMultiplePointMarker::addPointMarker(const geometry_msgs::Point &p1)
+    void ROSMultiplePointMarker::addPointMarker(const geometry_msgs::msg::Point &p1)
     {
         marker_.points.push_back(p1);
     }
 
     void ROSMultiplePointMarker::addPointMarker(const Eigen::Vector3d &p1)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = p1(0);
         result.y = p1(1);
         result.z = p1(2);
@@ -557,9 +560,9 @@ namespace RosTools
         addPointMarker(result);
     }
 
-    void ROSMultiplePointMarker::addPointMarker(const geometry_msgs::Pose &pose)
+    void ROSMultiplePointMarker::addPointMarker(const geometry_msgs::msg::Pose &pose)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = pose.position.x;
         result.y = pose.position.y;
         result.z = pose.position.z;
@@ -578,19 +581,19 @@ namespace RosTools
     {
 
         if (marker_type == "CUBE")
-            return visualization_msgs::Marker::CUBE_LIST;
+            return visualization_msgs::msg::Marker::CUBE_LIST;
         if (marker_type == "SPHERE")
-            return visualization_msgs::Marker::SPHERE_LIST;
+            return visualization_msgs::msg::Marker::SPHERE_LIST;
         if (marker_type == "POINTS")
-            return visualization_msgs::Marker::POINTS;
+            return visualization_msgs::msg::Marker::POINTS;
 
-        return visualization_msgs::Marker::CUBE_LIST;
+        return visualization_msgs::msg::Marker::CUBE_LIST;
     }
 
     ROSTextMarker::ROSTextMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id)
         : ROSMarker(ros_publisher, frame_id)
     {
-        marker_.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+        marker_.type = visualization_msgs::msg::Marker::TEXT_VIEW_FACING;
 
         // LINE_STRIP/LINE_LIST markers use only the x component of scale, for the line width
         marker_.scale.x = 1.;  // Scale "z" sets the size of an uppercase "A"
@@ -610,7 +613,7 @@ namespace RosTools
 
     void ROSTextMarker::addPointMarker(const Eigen::Vector3d &p1)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = p1(0);
         result.y = p1(1);
         result.z = p1(2);
@@ -618,7 +621,7 @@ namespace RosTools
         addPointMarker(result);
     }
 
-    void ROSTextMarker::addPointMarker(const geometry_msgs::Point &p1)
+    void ROSTextMarker::addPointMarker(const geometry_msgs::msg::Point &p1)
     {
         // Request an ID
         marker_.id = ros_publisher_->getID();
@@ -628,9 +631,9 @@ namespace RosTools
         ros_publisher_->add(marker_);
     }
 
-    void ROSTextMarker::addPointMarker(const geometry_msgs::Pose &pose)
+    void ROSTextMarker::addPointMarker(const geometry_msgs::msg::Pose &pose)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = pose.position.x;
         result.y = pose.position.y;
         result.z = pose.position.z;
@@ -661,7 +664,7 @@ namespace RosTools
     ROSModelMarker::ROSModelMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &model_path)
         : ROSMarker(ros_publisher, frame_id)
     {
-        marker_.type = visualization_msgs::Marker::MESH_RESOURCE;
+        marker_.type = visualization_msgs::msg::Marker::MESH_RESOURCE;
         marker_.mesh_resource = model_path;
         // "package://lmpcc/models/walking.dae";
 
@@ -682,7 +685,7 @@ namespace RosTools
 
     void ROSModelMarker::addPointMarker(const Eigen::Vector3d &p1)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = p1(0);
         result.y = p1(1);
         result.z = p1(2);
@@ -690,7 +693,7 @@ namespace RosTools
         addPointMarker(result);
     }
 
-    void ROSModelMarker::addPointMarker(const geometry_msgs::Point &p1)
+    void ROSModelMarker::addPointMarker(const geometry_msgs::msg::Point &p1)
     {
         // Request an ID
         marker_.id = ros_publisher_->getID();
@@ -700,9 +703,9 @@ namespace RosTools
         ros_publisher_->add(marker_);
     }
 
-    void ROSModelMarker::addPointMarker(const geometry_msgs::Pose &pose)
+    void ROSModelMarker::addPointMarker(const geometry_msgs::msg::Pose &pose)
     {
-        geometry_msgs::Point result;
+        geometry_msgs::msg::Point result;
         result.x = pose.position.x;
         result.y = pose.position.y;
         result.z = pose.position.z;

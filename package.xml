@@ -1,35 +1,31 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ros_tools</name>
-  <version>1.0.0</version>
-  <description>Package with tools to simplify working with ROS</description>
+    <name>ros_tools</name>
+    <version>1.0.0</version>
+    <description>Package with tools to simplify working with ROS</description>
 
-  <maintainer email="o.m.degroot@tudelft.nl">Oscar de Groot</maintainer>
-  <author>Oscar de Groot</author>
-  <license>GPUv2</license>
+    <maintainer email="o.m.degroot@tudelft.nl">Oscar de Groot</maintainer>
+    <author>Oscar de Groot</author>
+    <license>GPUv2</license>
 
-<buildtool_depend>ament_cmake</buildtool_depend>
+    <depend>rclcpp</depend>
+    <!-- <depend>eigen_conversions</depend> -->
+    <depend>eigen</depend>
+    <depend>boost</depend>
+    <depend>geometry_msgs</depend>
+    <!-- <depend>roslib</depend> -->
+    <depend>sensor_msgs</depend>
+    <depend>std_msgs</depend>
+    <depend>tf2</depend>
+    <depend>tf2_ros</depend>
+    <!-- <depend>tf_conversions</depend> -->
+    <depend>visualization_msgs</depend>
+    <!-- <depend>jsk_rviz_plugins</depend> -->
+    <!-- <exec_depend>rospy</exec_depend> -->
+    <exec_depend>rviz2</exec_depend>
 
- <test_depend>ament_lint_auto</test_depend>
- <test_depend>ament_lint_common</test_depend>
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
 
-  <depend>rclcpp</depend>
-  <depend>eigen_conversions</depend>
-  <depend>eigen</depend>
-  <depend>boost</depend>
-  <depend>geometry_msgs</depend>
-  <depend>roslib</depend>
-  <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>tf</depend>
-  <depend>tf_conversions</depend>
-  <depend>visualization_msgs</depend>
-  <depend>jsk_rviz_plugins</depend>
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>rviz</exec_depend>
-
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
-  
 </package>

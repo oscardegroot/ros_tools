@@ -14,26 +14,30 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-find_package(eigen_conversions REQUIRED)
+# find_package(eigen_conversions REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(roslint REQUIRED)
-find_package(roslib REQUIRED)
+# find_package(roslint REQUIRED)
+# find_package(roslib REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(tf REQUIRED)
-find_package(tf_conversions REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+# find_package(tf_conversions REQUIRED)
 find_package(visualization_msgs REQUIRED)
-find_package(jsk_rviz_plugins REQUIRED)
+# find_package(jsk_rviz_plugins REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread)
+
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 add_definitions(${EIGEN_DEFINITIONS})
 
 
 ## mesages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  ${msg_files}
-  DEPENDENCIES std_msgs
-)
+# rosidl_generate_interfaces(${PROJECT_NAME}
+#   ${msg_files}
+#   DEPENDENCIES std_msgs
+# )
 # ## BUILD ###
 include_directories(include
   ${EIGEN_INCLUDE_DIRS}
@@ -41,12 +45,13 @@ include_directories(include
   scripts/risk-eval-cpp
 )
 
+## LIBRARY ROS_TOOLS
 add_library(ros_tools
   src/ros_visuals.cpp
   src/helpers.cpp
   src/profiling.cpp
   src/data_saver.cpp
-  scripts/
+  # scripts/
 )
 # Adds headers based on the cpps added as sources
 target_include_directories(ros_tools
@@ -54,37 +59,39 @@ target_include_directories(ros_tools
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
-# How to get dependencies in here properly?
-ament_target_dependencies(ros_tools eigen_conversions)
 
+ament_target_dependencies(ros_tools 
+  rclcpp
+  std_msgs
+  Eigen3
+  geometry_msgs
+  sensor_msgs
+  tf2
+  tf2_ros
+  visualization_msgs
+)
 
-add_dependencies(ros_tools ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_executable(example
+  src/example.cpp
+)
 
-# ## Test Case ####
+target_link_libraries(example ros_tools)
+
+## Install
+
 install(TARGETS ros_tools
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+    DESTINATION lib/${PROJECT_NAME}
 )
 
-install(
-  DIRECTORY include/ros_tools/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+install(TARGETS example
+    DESTINATION lib/${PROJECT_NAME}
 )
 
-add_executable(risk_computation_node
-  scripts/risk-eval-cpp/risk_computation_node.cpp
-)
+## Package
+ament_export_dependencies(eigen3_cmake_module)
+ament_export_dependencies(Eigen3)
 
-target_link_libraries(risk_computation_node
-  ros_tools
-  ${catkin_LIBRARIES}
-)
-
-add_dependencies(risk_computation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-# Package
-ament_export_dependencies(eigen_conversions geometry_msgs roscpp sensor_msgs std_msgs tf tf_conversions visualization_msgs roslib)
+ament_export_dependencies(geometry_msgs rclcpp sensor_msgs std_msgs tf2 tf2_ros visualization_msgs roslib Eigen3)
 ament_export_include_directories(include include/${PROJECT_NAME})
 ament_export_libraries(ros_tools)
 
