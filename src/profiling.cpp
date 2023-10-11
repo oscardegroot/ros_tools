@@ -5,17 +5,16 @@
 #include <algorithm>
 
 #include <iostream>
+
 namespace RosTools
 {
-    void Instrumentor::BeginSession(const std::string &name, const std::string &filepath)
+    void Instrumentor::BeginSession(const std::string &filepath, const std::string &filename)
     {
-        // std::string full_filepath =  ament_index_cpp::get_package_share_directory(name) + "/" + filepath;
-        // std::string full_filepath = ament_index_cpp::get_package_share_directory(name) + "/../../../src/" + name + "/" + filepath;
-        std::string full_filepath = GetPackagePath(name) + filepath;
+        std::string full_filepath = filepath + filename;
         std::cout << full_filepath << std::endl;
         m_OutputStream.open(full_filepath);
         WriteHeader();
-        m_CurrentSession = new InstrumentationSession{name};
+        m_CurrentSession = new InstrumentationSession{filepath};
     }
 
     void Instrumentor::EndSession()

@@ -12,188 +12,188 @@
 #include <memory>
 #include <string>
 
-namespace RosTools{
-
-
-
-class ROSMarker;
-class ROSLine;
-class ROSPointMarker;
-class ROSMultiplePointMarker;
-class ROSTextMarker;
-class ROSModelMarker;
-
-enum class Colormap
-{
-    VIRIDIS = 0,
-    INFERNO,
-    BRUNO
-};
-
-class ROSMarkerPublisher
+namespace RosTools
 {
 
-public:
-    ROSMarkerPublisher(rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size);
-    ~ROSMarkerPublisher();
+    class ROSMarker;
+    class ROSLine;
+    class ROSPointMarker;
+    class ROSMultiplePointMarker;
+    class ROSTextMarker;
+    class ROSModelMarker;
 
-private:
-    // One publisher
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_;
+    enum class Colormap
+    {
+        VIRIDIS = 0,
+        INFERNO,
+        BRUNO
+    };
 
-    // One marker list
-    visualization_msgs::msg::MarkerArray marker_list_;
-    visualization_msgs::msg::MarkerArray prev_marker_list_;
+    class ROSMarkerPublisher
+    {
 
-    // a set of ros_markers
-    std::vector<std::unique_ptr<ROSMarker>> ros_markers_;
-    std::string topic_name_;
+    public:
+        ROSMarkerPublisher(const rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size);
+        ROSMarkerPublisher(rclcpp::Node *node, const char *topic_name, const std::string &frame_id, int max_size);
+        ~ROSMarkerPublisher();
 
-    std::string frame_id_;
-    int id_, prev_id_;
-    int max_size_;
+    private:
+        // One publisher
+        rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_;
 
-public:
-    void add(const visualization_msgs::msg::Marker &marker);
+        // One marker list
+        visualization_msgs::msg::MarkerArray marker_list_;
+        visualization_msgs::msg::MarkerArray prev_marker_list_;
 
-    ROSLine &getNewLine();
-    ROSPointMarker &getNewPointMarker(const std::string &marker_type);
-    ROSMultiplePointMarker &getNewMultiplePointMarker(const std::string &marker_type); // const std::string &marker_type);
-    ROSTextMarker &getNewTextMarker();                                                 // const std::string &marker_type);
-    ROSModelMarker &getNewModelMarker(const std::string &model_path);                  // const std::string &marker_type);
-    // ROSEllipse& getNewEllipse();
+        // a set of ros_markers
+        std::vector<std::unique_ptr<ROSMarker>> ros_markers_;
+        std::string topic_name_;
 
-    void publish(bool keep_markers = false);
+        std::string frame_id_;
+        int id_, prev_id_;
+        int max_size_;
 
-    int getID();
-    int numberOfMarkers() { return id_; };
+    public:
+        void add(const visualization_msgs::msg::Marker &marker);
 
-    std::string getFrameID() const;
-};
+        ROSLine &getNewLine();
+        ROSPointMarker &getNewPointMarker(const std::string &marker_type);
+        ROSMultiplePointMarker &getNewMultiplePointMarker(const std::string &marker_type); // const std::string &marker_type);
+        ROSTextMarker &getNewTextMarker();                                                 // const std::string &marker_type);
+        ROSModelMarker &getNewModelMarker(const std::string &model_path);                  // const std::string &marker_type);
+        // ROSEllipse& getNewEllipse();
 
-class ROSMarker
-{
+        void publish(bool keep_markers = false);
 
-public:
-    ROSMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
+        int getID();
+        int numberOfMarkers() { return id_; };
 
-protected:
-    static std::vector<double> VIRIDIS_, INFERNO_, BRUNO_;
+        std::string getFrameID() const;
+    };
 
-    visualization_msgs::msg::Marker marker_;
+    class ROSMarker
+    {
 
-    ROSMarkerPublisher *ros_publisher_;
+    public:
+        ROSMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
-    geometry_msgs::msg::Point vecToPoint(const Eigen::Vector3d &v);
+    protected:
+        static std::vector<double> VIRIDIS_, INFERNO_, BRUNO_;
 
-    std::vector<double> &getColors(const Colormap &colormap);
+        visualization_msgs::msg::Marker marker_;
 
-    void getColorFromRange(double ratio, double &red, double &green, double &blue);
-    void getColorFromRangeInt(int select, double &red, double &green, double &blue, const Colormap &colormap = Colormap::VIRIDIS);
+        ROSMarkerPublisher *ros_publisher_;
 
-public:
-    void setColor(double r, double g, double b, double alpha = 1.0);
-    // void setColor(double ratio); // Color rainbow wise
+        geometry_msgs::msg::Point vecToPoint(const Eigen::Vector3d &v);
 
-    void setColorInt(int select, double alpha = 1.0, const Colormap &&colormap = Colormap::VIRIDIS);            // Viridis (select our of range)
-    void setColorInt(int select, int range, double alpha = 1.0, const Colormap &&colormap = Colormap::VIRIDIS); // Viridis (select our of range)
+        std::vector<double> &getColors(const Colormap &colormap);
 
-    void setColor(double ratio, double alpha = 1.0);
-    void setScale(double x, double y, double z);
-    void setScale(double x, double y);
-    void setScale(double x);
-    void setOrientation(double psi);
-    void setOrientation(const geometry_msgs::msg::Quaternion &msg);
-    void setOrientation(const tf2::Quaternion &q);
-    void setLifetime(double lifetime);
+        void getColorFromRange(double ratio, double &red, double &green, double &blue);
+        void getColorFromRangeInt(int select, double &red, double &green, double &blue, const Colormap &colormap = Colormap::VIRIDIS);
 
-    void setActionDelete();
-    // void setIDRange(int range);
-    // void resetID(); // Internal id count
+    public:
+        void setColor(double r, double g, double b, double alpha = 1.0);
+        // void setColor(double ratio); // Color rainbow wise
 
-    void stamp();
-};
+        void setColorInt(int select, double alpha = 1.0, const Colormap &&colormap = Colormap::VIRIDIS);            // Viridis (select our of range)
+        void setColorInt(int select, int range, double alpha = 1.0, const Colormap &&colormap = Colormap::VIRIDIS); // Viridis (select our of range)
 
-class ROSLine : public ROSMarker
-{
+        void setColor(double ratio, double alpha = 1.0);
+        void setScale(double x, double y, double z);
+        void setScale(double x, double y);
+        void setScale(double x);
+        void setOrientation(double psi);
+        void setOrientation(const geometry_msgs::msg::Quaternion &msg);
+        void setOrientation(const tf2::Quaternion &q);
+        void setLifetime(double lifetime);
 
-public:
-    ROSLine(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
+        void setActionDelete();
+        // void setIDRange(int range);
+        // void resetID(); // Internal id count
 
-    void addLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2);
-    void addLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2);
+        void stamp();
+    };
 
-    void addBrokenLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double dist);
-    void addBrokenLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2, double dist);
-};
+    class ROSLine : public ROSMarker
+    {
 
-class ROSPointMarker : public ROSMarker
-{
+    public:
+        ROSLine(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
-public:
-    ROSPointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &marker_type);
+        void addLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2);
+        void addLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2);
 
-    void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::msg::Point &p1);
-    void addPointMarker(const geometry_msgs::msg::Pose &pose);
+        void addBrokenLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, double dist);
+        void addBrokenLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2, double dist);
+    };
 
-    void setZ(double z);
+    class ROSPointMarker : public ROSMarker
+    {
 
-private:
-    std::string marker_type_;
+    public:
+        ROSPointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &marker_type);
 
-    uint getMarkerType(const std::string &marker_type);
-};
+        void addPointMarker(const Eigen::Vector3d &p1);
+        void addPointMarker(const geometry_msgs::msg::Point &p1);
+        void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
-class ROSMultiplePointMarker : public ROSMarker
-{
+        void setZ(double z);
 
-public:
-    ROSMultiplePointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &type);
+    private:
+        std::string marker_type_;
 
-    void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::msg::Point &p1);
-    void addPointMarker(const geometry_msgs::msg::Pose &pose);
+        uint getMarkerType(const std::string &marker_type);
+    };
 
-    void finishPoints();
+    class ROSMultiplePointMarker : public ROSMarker
+    {
 
-private:
-    uint getMultipleMarkerType(const std::string &marker_type);
-};
+    public:
+        ROSMultiplePointMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &type);
 
-class ROSTextMarker : public ROSMarker
-{
+        void addPointMarker(const Eigen::Vector3d &p1);
+        void addPointMarker(const geometry_msgs::msg::Point &p1);
+        void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
-public:
-    ROSTextMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
+        void finishPoints();
 
-    void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::msg::Point &p1);
-    void addPointMarker(const geometry_msgs::msg::Pose &pose);
+    private:
+        uint getMultipleMarkerType(const std::string &marker_type);
+    };
 
-    void setZ(double z);
-    void setText(const std::string &text);
-    void setText(const std::string &&text);
+    class ROSTextMarker : public ROSMarker
+    {
 
-    void setScale(double z);
+    public:
+        ROSTextMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
-    // void setScale(double x) override;
+        void addPointMarker(const Eigen::Vector3d &p1);
+        void addPointMarker(const geometry_msgs::msg::Point &p1);
+        void addPointMarker(const geometry_msgs::msg::Pose &pose);
 
-private:
-};
+        void setZ(double z);
+        void setText(const std::string &text);
+        void setText(const std::string &&text);
 
-class ROSModelMarker : public ROSMarker
-{
+        void setScale(double z);
 
-public:
-    ROSModelMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &model_path);
+        // void setScale(double x) override;
 
-    void addPointMarker(const Eigen::Vector3d &p1);
-    void addPointMarker(const geometry_msgs::msg::Point &p1);
-    void addPointMarker(const geometry_msgs::msg::Pose &pose);
+    private:
+    };
 
-private:
-};
+    class ROSModelMarker : public ROSMarker
+    {
+
+    public:
+        ROSModelMarker(ROSMarkerPublisher *ros_publisher, const std::string &frame_id, const std::string &model_path);
+
+        void addPointMarker(const Eigen::Vector3d &p1);
+        void addPointMarker(const geometry_msgs::msg::Point &p1);
+        void addPointMarker(const geometry_msgs::msg::Pose &pose);
+
+    private:
+    };
 };
 
 #endif

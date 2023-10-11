@@ -23,7 +23,7 @@
 #include <chrono>
 
 /** Logging Pragmas */
-#define ROSTOOLS_HOOK std::cout << __FILE__ << " Line " << __LINE__ << std::endl;
+#define ROSTOOLS_HOOK std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 #define ROSTOOLS_ASSERT(Expr, Msg) __ROSTOOLS_ASSERT(#Expr, Expr, __FILE__, __LINE__, Msg)
 #define ROSTOOLS_HOOK_MSG(MSG) std::cout << __FILE__ << " Line " << __LINE__ << " [Message: " << MSG << "]" << std::endl;
 
@@ -123,6 +123,7 @@ namespace RosTools
 
     bool isActive(const Eigen::Vector2d &x)
     {
+      std::cout << x << std::endl;
       // double val = constraint_.A_(0, 0) * x(0) + constraint_.A_(0, 1) * x(1) - constraint_.b_(0);
 
       // return std::fabs(val) < 1e-4;
@@ -131,6 +132,8 @@ namespace RosTools
 
     double Value(const Eigen::Vector2d &x)
     {
+      std::cout << x << std::endl;
+
       return 0;
       // double val = constraint_.A_(0, 0) * x(0) + constraint_.A_(0, 1) * x(1) - constraint_.b_(0);
       // return -val; // needs to be less than 0, so 0 - val
@@ -210,7 +213,7 @@ namespace RosTools
     void PrintUpdate(int bound, const SupportSubsample &removed, int removed_bound, int iterations)
     {
       RCLCPP_INFO_STREAM(HELPERS_LOGGER, "SQP (" << iterations << "): Support = " << support_subsample_size_ << "/" << bound
-                              << " - Removed: " << removed.support_subsample_size_ << "/" << removed_bound);
+                                                 << " - Removed: " << removed.support_subsample_size_ << "/" << removed_bound);
     }
   };
   /*
@@ -291,7 +294,7 @@ namespace RosTools
   class SignalPublisher
   {
   public:
-    SignalPublisher(rclcpp::Node::SharedPtr node, const std::string &signal_name);
+    SignalPublisher(rclcpp::Node *node, const std::string &signal_name);
     void Publish(double signal_value);
 
   private:
@@ -390,7 +393,7 @@ namespace RosTools
   class SimulationTool
   {
   public:
-    SimulationTool(rclcpp::Node::SharedPtr node, const std::string &topic, double min_time_between, int max_experiments);
+    SimulationTool(rclcpp::Node *node, const std::string &topic, double min_time_between, int max_experiments);
 
   public:
     void ResetCallback(const std_msgs::msg::Empty &msg);
@@ -398,7 +401,7 @@ namespace RosTools
     bool Finished() const { return finished_; };
 
   private:
-    rclcpp::Node::SharedPtr node_;
+    rclcpp::Node* node_;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr reset_sub_;
 
     int counter_;

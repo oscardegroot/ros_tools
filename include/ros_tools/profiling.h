@@ -15,11 +15,11 @@ namespace RosTools
 #if PROFILER
 #define PROFILE_SCOPE(name) RosTools::InstrumentationTimer timer##__LINE__(name)
 #define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCTION__)
-#define PROFILE_AND_LOG(debug_enable, name) \
-    if (debug_enable)                       \
-    {                                       \
-        ROS_INFO_STREAM(name);              \
-    }                                       \
+#define PROFILE_AND_LOG(logger, debug_enable, name) \
+    if (debug_enable)                               \
+    {                                               \
+        RCLCPP_INFO_STREAM(logger, name);           \
+    }                                               \
     RosTools::InstrumentationTimer timer##__LINE__(name)
 #else
 #define PROFILE_SCOPE(name)
@@ -49,7 +49,7 @@ namespace RosTools
     public:
         Instrumentor() : m_CurrentSession(nullptr), m_ProfileCount(0) {}
 
-        void BeginSession(const std::string &name, const std::string &filepath = "profiler.json");
+        void BeginSession(const std::string &filepath, const std::string &filename = "profiler.json");
         void EndSession();
 
         void WriteProfile(const ProfileResult &result);

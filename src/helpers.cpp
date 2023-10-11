@@ -211,7 +211,7 @@ namespace RosTools
     }
 
     /** @todo: Translate to ROS2
-    
+
     bool transformPose(tf2_ros::TransformListener &tf_listener_, const std::string &from, const std::string &to, geometry_msgs::msg::Pose &pose)
     {
         bool transform = false;
@@ -327,7 +327,7 @@ namespace RosTools
         }
     };
 
-    SignalPublisher::SignalPublisher(rclcpp::Node::SharedPtr node, const std::string &signal_name)
+    SignalPublisher::SignalPublisher(rclcpp::Node *node, const std::string &signal_name)
     {
         pub_ = node->create_publisher<std_msgs::msg::Float32>("/lmpcc/" + signal_name, 1);
     }
@@ -487,7 +487,7 @@ namespace RosTools
         return current_duration.count() >= duration_;
     }
 
-    SimulationTool::SimulationTool(rclcpp::Node::SharedPtr node, const std::string &topic, double min_time_between, int max_experiments) : max_experiments_(max_experiments)
+    SimulationTool::SimulationTool(rclcpp::Node *node, const std::string &topic, double min_time_between, int max_experiments) : max_experiments_(max_experiments)
     {
         counter_ = 0;
         finished_ = false;

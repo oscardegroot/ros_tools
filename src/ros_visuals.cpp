@@ -4,15 +4,19 @@ namespace RosTools
 {
     static const rclcpp::Logger LOGGER = rclcpp::get_logger("ros_tools.ros_visuals");
 
-
     std::vector<double> ROSMarker::VIRIDIS_ = {253, 231, 37, 234, 229, 26, 210, 226, 27, 186, 222, 40, 162, 218, 55, 139, 214, 70, 119, 209, 83, 99, 203, 95, 80, 196, 106, 63, 188, 115, 49, 181, 123, 38, 173, 129, 33, 165, 133, 30, 157, 137, 31, 148, 140, 34, 140, 141, 37, 131, 142, 41, 123, 142, 44, 115, 142, 47, 107, 142, 51, 98, 141, 56, 89, 140};
     std::vector<double> ROSMarker::INFERNO_ = {252, 255, 164, 241, 237, 113, 246, 213, 67, 251, 186, 31, 252, 161, 8, 248, 135, 14, 241, 113, 31, 229, 92, 48, 215, 75, 63, 196, 60, 78, 177, 50, 90, 155, 41, 100, 135, 33, 107, 113, 25, 110, 92, 18, 110, 69, 10, 105, 47, 10, 91, 24, 12, 60};
     std::vector<double> ROSMarker::BRUNO_ = {217, 83, 25, 0, 114, 189, 119, 172, 48, 126, 47, 142, 237, 177, 32, 77, 190, 238, 162, 19, 47, 256, 153, 256, 0, 103, 256};
     // marker_list_ holds the rosmarkers to draw
     // ros_markers_ is the list of ROSMarker objects defined in this file
 
-    ROSMarkerPublisher::ROSMarkerPublisher(rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size) : frame_id_(frame_id),
-                                                                                                                                     max_size_(max_size)
+    ROSMarkerPublisher::ROSMarkerPublisher(const rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size)
+    {
+        ROSMarkerPublisher(node.get(), topic_name, frame_id, max_size);
+    }
+
+    ROSMarkerPublisher::ROSMarkerPublisher(rclcpp::Node *node, const char *topic_name, const std::string &frame_id, int max_size) : frame_id_(frame_id),
+                                                                                                                                    max_size_(max_size)
     {
 
         pub_ = node->create_publisher<visualization_msgs::msg::MarkerArray>(topic_name, 3);

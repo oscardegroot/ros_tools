@@ -10,35 +10,25 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 add_compile_options(-DCMAKE_BUILD_TYPE=Release)
 
+## PACKAGES ##
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-# find_package(eigen_conversions REQUIRED)
 find_package(geometry_msgs REQUIRED)
-# find_package(roslint REQUIRED)
-# find_package(roslib REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-# find_package(tf_conversions REQUIRED)
 find_package(visualization_msgs REQUIRED)
 # find_package(jsk_rviz_plugins REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
+include(ConfigExtras.cmake)
 
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
-
 add_definitions(${EIGEN_DEFINITIONS})
 
-
-## mesages
-# rosidl_generate_interfaces(${PROJECT_NAME}
-#   ${msg_files}
-#   DEPENDENCIES std_msgs
-# )
-# ## BUILD ###
+## BUILD ###
 include_directories(include
   ${EIGEN_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
@@ -47,7 +37,7 @@ include_directories(include
 )
 
 ## LIBRARY ROS_TOOLS
-add_library(ros_tools
+add_library(${PROJECT_NAME} SHARED
   src/ros_visuals.cpp
   src/helpers.cpp
   src/profiling.cpp
@@ -55,13 +45,13 @@ add_library(ros_tools
   # scripts/
 )
 # Adds headers based on the cpps added as sources
-target_include_directories(ros_tools
+target_include_directories(${PROJECT_NAME}
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
 
-ament_target_dependencies(ros_tools 
+ament_target_dependencies(${PROJECT_NAME}
   rclcpp
   std_msgs
   Eigen3
@@ -72,6 +62,11 @@ ament_target_dependencies(ros_tools
   visualization_msgs
 )
 
+target_link_libraries(${PROJECT_NAME} 
+  ${Boost_LIBRARIES}
+)
+
+# EXAMPLE
 add_executable(example
   src/example.cpp
 )
@@ -81,15 +76,22 @@ target_link_libraries(example
   ${Boost_LIBRARIES}
 )
 
-## Install
-
-install(TARGETS ros_tools
-    DESTINATION lib/${PROJECT_NAME}
+## INSTALL ##
+# The library
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
+install(DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME})
+
+# The example
 install(TARGETS example
-    DESTINATION lib/${PROJECT_NAME}
-)
+  DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME})
@@ -97,12 +99,18 @@ install(DIRECTORY launch
 install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME})
 
-## Package
+## FINALIZE PACKAGE ##
+ament_export_include_directories(include/${PROJECT_NAME})
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)
+ament_export_dependencies(Boost)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(tf2)
+ament_export_dependencies(tf2_ros)
+ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(sensor_msgs)
+ament_export_dependencies(std_msgs)
+ament_export_dependencies(visualization_msgs)
 
-ament_export_dependencies(geometry_msgs rclcpp sensor_msgs std_msgs tf2 tf2_ros visualization_msgs roslib Eigen3)
-ament_export_include_directories(include include/${PROJECT_NAME})
-ament_export_libraries(ros_tools)
-
-ament_package()
+ament_package(CONFIG_EXTRAS "ConfigExtras.cmake")

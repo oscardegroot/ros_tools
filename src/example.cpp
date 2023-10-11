@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     int counter = 0; // Dummy for data
 
     rclcpp::Rate rate(1.);
-    while (rclcpp::ok())    
+    while (rclcpp::ok())
     {
         PROFILE_SCOPE("Loop()");
 
@@ -34,24 +34,24 @@ int main(int argc, char **argv)
 
             /** @note Visuals */
             // Publish two cubes in RViz
-            auto& cube = marker_publisher.getNewPointMarker("CUBE");
+            auto &cube = marker_publisher.getNewPointMarker("CUBE");
             cube.setColorInt(0, 5); // index 0/5
             cube.setScale(0.25, 0.25, 0.25);
-            cube.addPointMarker(Eigen::Vector3d(0., 0., 0.));        
-            
+            cube.addPointMarker(Eigen::Vector3d(0., 0., 0.));
+
             // A bigger cube
             cube.setColorInt(1, 5, 0.5); // Transparency of 0.5 and index 1/5
             cube.setScale(0.5, 0.5, 0.5);
             cube.addPointMarker(Eigen::Vector3d(0., 0., 1.));
 
             // A sphere
-            auto& sphere = marker_publisher.getNewPointMarker("SPHERE");
+            auto &sphere = marker_publisher.getNewPointMarker("SPHERE");
             sphere.setColorInt(2, 5);
             sphere.setScale(0.25, 0.25, 0.25);
-            sphere.addPointMarker(Eigen::Vector3d(0., 0., 2.));  
+            sphere.addPointMarker(Eigen::Vector3d(0., 0., 2.));
 
             // Draw a line upward
-            auto& line = marker_publisher.getNewLine();
+            auto &line = marker_publisher.getNewLine();
             line.setScale(0.1); // Line thickness
             line.setColorInt(3, 5);
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
             line.addLine(p1, p2);
 
             // Text
-            auto& text = marker_publisher.getNewTextMarker();
+            auto &text = marker_publisher.getNewTextMarker();
             text.setText("Ros Tools Example!");
             text.setColorInt(5, 5);
             text.addPointMarker(Eigen::Vector3d(-1, 0., 0.));
@@ -81,20 +81,16 @@ int main(int argc, char **argv)
             counter++;
         }
 
-
         // Publish all visuals
         marker_publisher.publish();
 
         rclcpp::spin_some(node);
         rate.sleep();
-
     }
 
     RosTools::Instrumentor::Get().EndSession();
 
-
     rclcpp::shutdown();
 
     return 0;
-
 }
