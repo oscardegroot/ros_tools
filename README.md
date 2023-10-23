@@ -31,6 +31,12 @@ When running the example, you should see the following in `rviz2`:
 
 ---
 
+## Debugging
+This package provides two useful commands for debugging.
+
+`ROSTOOLS_HOOK` prints the line and file where it is in the terminal and can be clicked in `VSCode`. `ROSTOOLS_ASSERT` prints its line and file when the assert fails.
+
+
 ## Profiling
 Profiling output is stored in the package that is selected in its initialization (see the example). To view the output, open chrome and go to `chrome://tracing/`. Click load in the top left and navigate and select `<your_package>/profiler.json`.
 
