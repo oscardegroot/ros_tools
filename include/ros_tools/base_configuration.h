@@ -33,6 +33,15 @@ namespace RosTools
       return node->get_parameter(name, value);
     }
 
+    template <class T>
+    bool retrieveParameter(rclcpp::Node *node, const std::string &name, T &value)
+    {
+      if (!declared_)
+        node->declare_parameter<T>(name);
+
+      return node->get_parameter(name, value);
+    }
+
     /* Retrieve parameter, if it doesn't exist use the default */
     template <class T>
     void retrieveParameter(rclcpp::Node::SharedPtr node, const std::string &name, T &value, const T &default_value)
@@ -43,8 +52,27 @@ namespace RosTools
       node->get_parameter(name, value);
     }
 
+    /* Retrieve parameter, if it doesn't exist use the default */
+    template <class T>
+    void retrieveParameter(rclcpp::Node *node, const std::string &name, T &value, const T &default_value)
+    {
+      if (!declared_)
+        node->declare_parameter<T>(name, default_value);
+
+      node->get_parameter(name, value);
+    }
+
     template <class L>
     void retrieveParameter(rclcpp::Node::SharedPtr node, const std::string &name, std::vector<L> &value, const std::vector<L> &default_value)
+    {
+      if (!declared_)
+        node->declare_parameter<std::vector<L>>(name, default_value);
+
+      node->get_parameter(name, value);
+    }
+
+    template <class L>
+    void retrieveParameter(rclcpp::Node *node, const std::string &name, std::vector<L> &value, const std::vector<L> &default_value)
     {
       if (!declared_)
         node->declare_parameter<std::vector<L>>(name, default_value);

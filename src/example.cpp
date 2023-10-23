@@ -9,13 +9,13 @@
 
 int main(int argc, char **argv)
 {
-    RosTools::Instrumentor::Get().BeginSession("ros_tools");
 
     PROFILE_FUNCTION();
 
     rclcpp::init(argc, argv);
 
     auto node = rclcpp::Node::make_shared("rostools_example");
+    RosTools::Instrumentor::Get().BeginSession(node->get_logger(), "ros_tools");
 
     // For visuals!
     RosTools::ROSMarkerPublisher marker_publisher(node, "ros_tools/example/visuals", "map", 5);

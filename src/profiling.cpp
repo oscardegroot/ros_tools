@@ -8,10 +8,11 @@
 
 namespace RosTools
 {
-    void Instrumentor::BeginSession(const std::string &filepath, const std::string &filename)
+    void Instrumentor::BeginSession(rclcpp::Logger logger, const std::string &filepath, const std::string &filename)
     {
         std::string full_filepath = filepath + filename;
-        std::cout << full_filepath << std::endl;
+        RCLCPP_INFO_STREAM(logger, "Profiling output file: " << full_filepath << " (load in chrome://tracing)");
+        // std::cout << full_filepath << std::endl;
         m_OutputStream.open(full_filepath);
         WriteHeader();
         m_CurrentSession = new InstrumentationSession{filepath};

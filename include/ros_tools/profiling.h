@@ -1,6 +1,8 @@
 #ifndef __ROSTOOLS_PROFILING_H__
 #define __ROSTOOLS_PROFILING_H__
 
+#include <rclcpp/rclcpp.hpp>
+
 #include <fstream>
 #include <thread>
 #include <mutex>
@@ -49,7 +51,7 @@ namespace RosTools
     public:
         Instrumentor() : m_CurrentSession(nullptr), m_ProfileCount(0) {}
 
-        void BeginSession(const std::string &filepath, const std::string &filename = "profiler.json");
+        void BeginSession(rclcpp::Logger logger, const std::string &filepath, const std::string &filename = "profiler.json");
         void EndSession();
 
         void WriteProfile(const ProfileResult &result);
