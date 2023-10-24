@@ -23,6 +23,7 @@ namespace RosTools
   protected:
     bool declared_ = false;
 
+  public:
     /* Retrieve paramater, if it doesn't exist return false */
     template <class T>
     bool retrieveParameter(rclcpp::Node::SharedPtr node, const std::string &name, T &value)

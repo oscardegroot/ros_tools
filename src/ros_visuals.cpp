@@ -10,7 +10,7 @@ namespace RosTools
     // marker_list_ holds the rosmarkers to draw
     // ros_markers_ is the list of ROSMarker objects defined in this file
 
-    ROSMarkerPublisher::ROSMarkerPublisher(const rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size)
+    ROSMarkerPublisher::ROSMarkerPublisher(rclcpp::Node::SharedPtr node, const char *topic_name, const std::string &frame_id, int max_size)
     {
         ROSMarkerPublisher(node.get(), topic_name, frame_id, max_size);
     }
