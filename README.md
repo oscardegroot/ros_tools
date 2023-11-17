@@ -8,10 +8,16 @@ This package is a tool package for ROS2 that contains:
 
 - Various other tools in `helpers.h`
 
-For usage see the [example](src/example.cpp). To launch the example use
+For usage with cpp see the [cpp-example](src/example.cpp). To launch the cpp example use
 
 ```
 ros2 launch ros_tools example.launch
+```
+
+For usage with python see the [python-example](ros_tools/example_py.py). To launch the cpp example use
+
+```
+ros2 launch ros_tools example_py.launch.py
 ```
 
 ---
