@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Point, Pose
-from ros2_bridge.src.ros_tools.ros_tools.ros_visuals_py import ROSMarkerPublisher
+from ros_visuals_py import ROSMarkerPublisher
 import time
 
 def main():
