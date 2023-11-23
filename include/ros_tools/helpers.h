@@ -289,7 +289,7 @@ namespace RosTools
 
   void DrawPoint(ROSMarkerPublisher &ros_markers, const Eigen::Vector2d &point);
   void DrawLine(ROSLine &line, double a1, double a2, double b, double line_length = 100.);
-  void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, int idx);
+  void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, int idx, double line_length = 100.);
 
   class SignalPublisher
   {
@@ -401,7 +401,7 @@ namespace RosTools
     bool Finished() const { return finished_; };
 
   private:
-    rclcpp::Node* node_;
+    rclcpp::Node *node_;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr reset_sub_;
 
     int counter_;

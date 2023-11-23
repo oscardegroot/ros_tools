@@ -316,14 +316,21 @@ namespace RosTools
         line.addLine(p1, p2);
     };
 
-    void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces, int idx)
+    void DrawHalfspaces(ROSMarkerPublisher &ros_markers, const std::vector<Halfspace> &halfspaces,
+                        int idx, double line_length)
     {
 
+        ROSLine &line = ros_markers.getNewLine();
+        line.setScale(0.1);
         for (auto &halfspace : halfspaces)
         {
-            ROSLine &line = ros_markers.getNewLine();
             line.setColorInt(idx);
-            DrawLine(line, halfspace.A_[0], halfspace.A_[1], halfspace.b_);
+            DrawLine(line, halfspace.A_[0], halfspace.A_[1], halfspace.b_, line_length);
+
+            // Ax <= b (is stricter for lower b)
+            // Plot another line where it is less strict (higher b)
+            line.setColor(0.8, 0.8, 0.8);
+            DrawLine(line, halfspace.A_[0], halfspace.A_[1], halfspace.b_ + 0.1, line_length);
         }
     };
 
@@ -499,6 +506,8 @@ namespace RosTools
 
     void SimulationTool::ResetCallback(const std_msgs::msg::Empty &msg)
     {
+        (void)msg;
+
         // Was this the last simulation (noting that the system is reset initially)
         if (counter_ >= max_experiments_)
         {

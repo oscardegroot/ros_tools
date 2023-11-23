@@ -13,6 +13,7 @@ namespace RosTools
         virtual Eigen::Vector2d GetPoint(double s) const = 0;
         virtual Eigen::Vector2d GetVelocity(double s) const = 0;
         virtual Eigen::Vector2d GetAcceleration(double s) const = 0;
+        virtual Eigen::Vector2d GetOrthogonal(double s) const = 0;
         virtual void GetParameters(int index, double &ax, double &bx, double &cx, double &dx, double &ay, double &by,
                                    double &cy, double &dy) = 0;
 
@@ -52,6 +53,11 @@ namespace RosTools
         Eigen::Vector2d GetAcceleration(double s) const override
         {
             return Eigen::Vector2d(spline_x_.deriv(2, s), spline_y_.deriv(2, s));
+        }
+
+        Eigen::Vector2d GetOrthogonal(double s) const override
+        {
+            return Eigen::Vector2d(-spline_y_.deriv(1, s), spline_x_.deriv(1, s));
         }
 
         void GetParameters(int index, double &ax, double &bx, double &cx, double &dx, double &ay, double &by, double &cy,
@@ -107,4 +113,5 @@ namespace RosTools
         }
     };
 };
-#endif // __TYPES_H__
+
+#endif
