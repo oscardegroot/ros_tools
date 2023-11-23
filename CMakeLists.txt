@@ -20,6 +20,11 @@ find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(visualization_msgs REQUIRED)
+
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy REQUIRED) # for python example
+find_package(Python3 REQUIRED)
+set(PYTHON_EXECUTABLE python3)
 # find_package(jsk_rviz_plugins REQUIRED)
 
 include(ConfigExtras.cmake)
@@ -93,11 +98,27 @@ install(DIRECTORY include/
 install(TARGETS example
   DESTINATION lib/${PROJECT_NAME})
 
+
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME})
   
 install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME})
+
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+# Install Python executables
+install(PROGRAMS
+  ros_tools/example_py.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME example_py
+)
+
+install(PROGRAMS
+  ros_tools/ros_visuals_py.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME ros_visuals_py
+)
 
 ## FINALIZE PACKAGE ##
 ament_export_include_directories(include/${PROJECT_NAME})

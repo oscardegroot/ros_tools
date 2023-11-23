@@ -8,6 +8,9 @@
     <author>Oscar de Groot</author>
     <license>GPUv2</license>
 
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <buildtool_depend>ament_cmake_python</buildtool_depend>
+
     <depend>rclcpp</depend>
     <!-- <depend>eigen_conversions</depend> -->
     <depend>eigen</depend>
@@ -23,6 +26,10 @@
     <!-- <depend>jsk_rviz_plugins</depend> -->
     <!-- <exec_depend>rospy</exec_depend> -->
     <exec_depend>rviz2</exec_depend>
+
+    <test_depend>python3-pytest</test_depend>
+
+    
 
     <export>
         <build_type>ament_cmake</build_type>
