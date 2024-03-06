@@ -1,6 +1,7 @@
 #include "ros_tools/profiling.h"
 
 #include <ros_tools/logging.h>
+#include <ros_tools/paths.h>
 
 #include <thread>
 
@@ -74,7 +75,7 @@ namespace RosTools
 
     void Instrumentor::BeginSession(const std::string &name, const std::string &filepath)
     {
-        std::string full_filepath = "~/.ros/" + filepath;
+        std::string full_filepath = getPackagePath(name) + "/" + filepath;
         m_OutputStream.open(full_filepath);
         WriteHeader();
         m_CurrentSession = new InstrumentationSession{name};

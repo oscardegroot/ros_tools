@@ -192,7 +192,7 @@ namespace RosTools
     template <class T>
     bool LoadData(const std::string &file_name, std::map<std::string, std::vector<T>> &result)
     {
-      const std::string path = ros::package::getPath("lmpcc") + "/matlab_exports/data";
+      const std::string path = ros::package::getPath("mpc-planner") + "/data/";
       return LoadData(path, file_name, result);
     }
 
