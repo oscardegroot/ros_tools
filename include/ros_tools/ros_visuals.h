@@ -46,7 +46,7 @@ namespace RosTools
         visualization_msgs::msg::MarkerArray prev_marker_list_;
 
         // a set of ros_markers
-        std::vector<std::unique_ptr<ROSMarker>> ros_markers_;
+        std::vector<std::shared_ptr<ROSMarker>> ros_markers_;
         std::string topic_name_;
 
         std::string frame_id_;
@@ -67,6 +67,7 @@ namespace RosTools
 
         int getID();
         int numberOfMarkers() { return id_; };
+        std::string getTopicName() const { return topic_name_; };
 
         std::string getFrameID() const;
     };
@@ -120,6 +121,7 @@ namespace RosTools
     public:
         ROSLine(ROSMarkerPublisher *ros_publisher, const std::string &frame_id);
 
+        void addLine(const Eigen::Vector2d &p1, const Eigen::Vector2d &p2, double z = 0.);
         void addLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2);
         void addLine(const geometry_msgs::msg::Point &p1, const geometry_msgs::msg::Point &p2);
 
@@ -136,6 +138,7 @@ namespace RosTools
         void addPointMarker(const Eigen::Vector3d &p1);
         void addPointMarker(const geometry_msgs::msg::Point &p1);
         void addPointMarker(const geometry_msgs::msg::Pose &pose);
+        void addPointMarker(const Eigen::Vector2d &p, double z = 0.0);
 
         void setZ(double z);
 
