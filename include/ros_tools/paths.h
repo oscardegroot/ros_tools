@@ -1,12 +1,9 @@
 #ifndef __ROS_TOOLS_PATHS_H__
 #define __ROS_TOOLS_PATHS_H__
 
-// Your code here
-#define MPC_PLANNER_ROS 1
-
 #include <string>
 
-#if MPC_PLANNER_ROS == 1
+#ifdef MPC_PLANNER_ROS
 #include <ros/package.h>
 
 inline std::string getPackagePath(const std::string &&package_name)
@@ -19,7 +16,18 @@ inline std::string getPackagePath(const std::string &package_name)
     return ros::package::getPath(package_name);
 }
 
-#elif MPC_PLANNER_ROS == 2
+#else
+#include <ament_index_cpp/get_package_share_directory.hpp>
+
+inline std::string getPackagePath(const std::string &&package_name)
+{
+    return ament_index_cpp::get_package_share_directory(package_name) + "/../../../src/" + package_name + "/";
+}
+
+inline std::string getPackagePath(const std::string &package_name)
+{
+    return ament_index_cpp::get_package_share_directory(package_name) + "/../../../src/" + package_name + "/";
+}
 
 #endif
 

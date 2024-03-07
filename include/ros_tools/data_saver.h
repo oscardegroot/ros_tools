@@ -21,8 +21,8 @@ data_saver_test.SaveData("export_1");
 #ifndef DATA_SAVER_H
 #define DATA_SAVER_H
 
-#include <ros/ros.h>
-#include <ros/package.h>
+#include <ros_tools/logging.h>
+#include <ros_tools/paths.h>
 
 #include <Eigen/Dense>
 #include <chrono>
@@ -192,7 +192,7 @@ namespace RosTools
     template <class T>
     bool LoadData(const std::string &file_name, std::map<std::string, std::vector<T>> &result)
     {
-      const std::string path = ros::package::getPath("mpc-planner") + "/data/";
+      const std::string path = getPackagePath("mpc-planner") + "/data/";
       return LoadData(path, file_name, result);
     }
 
@@ -204,11 +204,11 @@ namespace RosTools
       // Setup a file stream
       std::ifstream import_file(full_file_path);
 
-      ROS_INFO_STREAM("Data Saver: Loading data from " << full_file_path);
+      LOG_INFO("Data Saver: Loading data from " << full_file_path);
 
       if (!import_file.good())
       {
-        ROS_WARN("Data Saver: No file with this name was found.");
+        LOG_WARN("Data Saver: No file with this name was found.");
         return false;
       }
 
