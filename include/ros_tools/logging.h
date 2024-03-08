@@ -8,6 +8,7 @@
 #define LOG_WARN(...) ROS_WARN_STREAM("\033[33m" << __VA_ARGS__ << "\033[0m")
 #define LOG_ERROR(...) ROS_ERROR_STREAM(__VA_ARGS__)
 #define LOG_DEBUG(...) ROS_DEBUG_STREAM(__VA_ARGS__)
+#define LOG_SUCCESS(...) ROS_SUCCESS_STREAM("\033[32m" << __VA_ARGS__ << "\033[0m")
 #define LOG_INFO_THROTTLE(rate, ...) ROS_INFO_STREAM_THROTTLE(rate, __VA_ARGS__)
 #define LOG_WARN_THROTTLE(rate, ...) ROS_WARN_STREAM_THROTTLE(rate, "\033[33m" << __VA_ARGS__ << "\033[0m")
 #define LOG_ERROR_THROTTLE(rate, ...) ROS_ERROR_STREAM_THROTTLE(rate, __VA_ARGS__)
@@ -19,6 +20,7 @@
 #define LOG_INFO(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
 #define LOG_WARN(...) RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[33m" << __VA_ARGS__ << "\033[0m")
 #define LOG_ERROR(...) RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
+#define LOG_SUCCESS(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[32m" << __VA_ARGS__ "\033[0m")
 #define LOG_DEBUG(...) RCLCPP_DEBUG_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
 
 inline void __RCLCPP_WARN_STREAM_THROTTLE(const double rate, const std::string &msg)
