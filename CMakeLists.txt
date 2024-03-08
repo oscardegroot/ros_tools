@@ -68,6 +68,9 @@ install(DIRECTORY include/${PROJECT_NAME}
 install(DIRECTORY include/third_party/
   DESTINATION include/third_party/)
 
+install(DIRECTORY models
+  DESTINATION share/${PROJECT_NAME})
+
 ament_export_include_directories(include/${PROJECT_NAME} ${EIGEN3_INCLUDE_DIRS})
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(${DEPENDENCIES})
