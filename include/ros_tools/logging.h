@@ -27,8 +27,14 @@ inline void __RCLCPP_WARN_STREAM_THROTTLE(const double rate, const std::string &
     RCLCPP_WARN_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), clock, rate, "\033[33m" << msg << "\033[0m");
 }
 
-#define LOG_INFO_THROTTLE(rate, ...) RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), rate, __VA_ARGS__)
-#define LOG_WARN_THROTTLE(rate, ...) __RCLCPP_WARN_STREAM_THROTTLE(rate, __VA_ARGS__); //"\033[33m" << __VA_ARGS__ << "\033[0m")
+inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &msg)
+{
+    auto clock = rclcpp::Clock();
+    RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), clock, rate, msg);
+}
+
+#define LOG_INFO_THROTTLE(rate, ...) __RCLCPP_INFO_STREAM_THROTTLE(rate, __VA_ARGS__)
+#define LOG_WARN_THROTTLE(rate, ...) __RCLCPP_WARN_STREAM_THROTTLE(rate, __VA_ARGS__)
 #define LOG_ERROR_THROTTLE(rate, ...) RCLCPP_ERROR_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), rate, __VA_ARGS__)
 #define LOG_DEBUG_THROTTLE(rate, ...) RCLCPP_DEBUG_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), rate, __VA_ARGS__)
 // #else
