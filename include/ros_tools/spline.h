@@ -29,6 +29,7 @@ namespace RosTools
         double getSegmentStart(int index) const { return _t_vector[index]; };
         // double getSegmentEnd(int index) const { return _s_vector[index]; };
         double length() const { return _s_vector.back(); }
+        double parameterLength() const { return _t_vector.back(); }
 
         tk::spline &getXSpline() { return _x_spline; }
         tk::spline &getYSpline() { return _y_spline; }

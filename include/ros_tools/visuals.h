@@ -53,7 +53,7 @@ private:
 
 #else
 #include <ros_tools/ros_visuals.h>
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/node.hpp>
 
 class Visuals
 {

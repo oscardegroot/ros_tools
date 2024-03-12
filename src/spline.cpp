@@ -13,9 +13,10 @@ namespace RosTools
         computeDistanceVector(x, y, _s_vector);
 
         // Initialize two splines for x and y
-        _x_spline.set_points(_s_vector, x);
-        _y_spline.set_points(_s_vector, y);
         _t_vector = _s_vector; // Spline in s
+
+        _x_spline.set_points(_t_vector, x);
+        _y_spline.set_points(_t_vector, y);
     }
 
     /** @note a spline parameterized over another vector t*/
