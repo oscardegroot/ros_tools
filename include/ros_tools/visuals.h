@@ -61,6 +61,7 @@ public:
     static Visuals &get()
     {
         static Visuals instance;
+
         return instance;
     }
 
@@ -78,6 +79,8 @@ public:
         }
         return _publishers.at(topic_name); // Retrieve the publisher from the map
     }
+
+    bool isInitialized() const { return _node != nullptr; }
 
 private:
     std::unordered_map<std::string, RosTools::ROSMarkerPublisher> _publishers;

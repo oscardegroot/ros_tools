@@ -14,7 +14,9 @@
 #define LOG_ERROR_THROTTLE(rate, ...) ROS_ERROR_STREAM_THROTTLE(rate, __VA_ARGS__)
 #define LOG_DEBUG_THROTTLE(rate, ...) ROS_DEBUG_STREAM_THROTTLE(rate, __VA_ARGS__)
 #else
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/logging.hpp>
+#include <rclcpp/clock.hpp>
+
 #include <filesystem>
 #define LOGGING_NAME std::filesystem::path(__FILE__).filename().replace_extension("").string()
 #define LOG_INFO(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
@@ -55,7 +57,7 @@ inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &
 #define LOG_VALUE_DEBUG(name, value) LOG_DEBUG("\033[1m" << name << ":\033[0m " << value)
 #define LOG_DIVIDER() LOG_INFO("========================================")
 
-#define LOG_HOOK() LOG_INFO(__FILE__ << " Line " << __LINE__);
+#define LOG_HOOK() LOG_INFO(__FILE__ << ":" << __LINE__);
 
 #define ROSTOOLS_ASSERT(Expr, Msg) __ROSTOOLS_ASSERT(#Expr, Expr, __FILE__, __LINE__, Msg)
 
@@ -64,10 +66,41 @@ inline void __ROSTOOLS_ASSERT(const char *expr_str, bool expr, const char *file,
 {
     if (!expr)
     {
-        std::cerr << "Assert failed:\t" << msg << "\n"
-                  << "Expected:\t" << expr_str << "\n"
-                  << "Source:\t\t" << file << ", line " << line << "\n";
+        LOG_ERROR("Assert failed:\t" << msg << "\n"
+                                     << "Expected:\t" << expr_str << "\n"
+                                     << "Source:\t\t" << file << ", line " << line << "\n");
         abort();
     }
 }
+
+class LogInitialize
+{
+public:
+    LogInitialize(std::string &&name)
+    {
+        _log_output = "Initializing " + name;
+    }
+
+    ~LogInitialize()
+    {
+        if (!_printed)
+            LOG_INFO(_log_output);
+    }
+
+    void print()
+    {
+        _printed = true;
+        _log_output += "\033[32m -> Done\033[0m";
+
+        LOG_INFO(_log_output);
+    }
+
+private:
+    bool _printed{false};
+    std::string _log_output{""};
+};
+
+#define LOG_INITIALIZE(name) LogInitialize log_initialize(name)
+#define LOG_INITIALIZED() log_initialize.print()
+
 #endif // ros_tools_H
