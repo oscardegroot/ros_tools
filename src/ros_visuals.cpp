@@ -38,10 +38,9 @@ namespace RosTools
 
         if (marker.id > max_size_ - 1)
         {
-            double prev_size = max_size_;
             // If we exceed the max size, allocate 1.5 times the space and give an error
             max_size_ = std::ceil(max_size_ * 1.5);
-            ROS_WARN_STREAM("ROS VISUALS (topic = " << topic_name_ << "): exceeded max size of " << prev_size << ". New size: " << max_size_);
+            // ROS_WARN_STREAM("ROS VISUALS (topic = " << topic_name_ << "): exceeded max size of " << prev_size << ". New size: " << max_size_);
 
             marker_list_.markers.reserve(max_size_);
         }

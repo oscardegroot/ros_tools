@@ -17,6 +17,7 @@ namespace RosTools
         Eigen::Vector2d getPoint(double t) const;
         Eigen::Vector2d getVelocity(double t) const;
         Eigen::Vector2d getAcceleration(double t) const;
+        Eigen::Vector2d getOrthogonal(double t) const;
 
         /** @brief Check the entire spline for the closest point */
         void findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out) const;

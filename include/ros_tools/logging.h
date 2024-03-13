@@ -8,7 +8,7 @@
 #define LOG_WARN(...) ROS_WARN_STREAM("\033[33m" << __VA_ARGS__ << "\033[0m")
 #define LOG_ERROR(...) ROS_ERROR_STREAM(__VA_ARGS__)
 #define LOG_DEBUG(...) ROS_DEBUG_STREAM(__VA_ARGS__)
-#define LOG_SUCCESS(...) ROS_SUCCESS_STREAM("\033[32m" << __VA_ARGS__ << "\033[0m")
+#define LOG_SUCCESS(...) ROS_INFO_STREAM("\033[32m" << __VA_ARGS__ << "\033[0m")
 #define LOG_INFO_THROTTLE(rate, ...) ROS_INFO_STREAM_THROTTLE(rate, __VA_ARGS__)
 #define LOG_WARN_THROTTLE(rate, ...) ROS_WARN_STREAM_THROTTLE(rate, "\033[33m" << __VA_ARGS__ << "\033[0m")
 #define LOG_ERROR_THROTTLE(rate, ...) ROS_ERROR_STREAM_THROTTLE(rate, __VA_ARGS__)
@@ -58,6 +58,7 @@ inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &
 #define LOG_DIVIDER() LOG_INFO("========================================")
 
 #define LOG_HOOK() LOG_INFO(__FILE__ << ":" << __LINE__);
+#define LOG_HOOK_MSG(msg) LOG_INFO(__FILE__ << ":" << __LINE__ << " " << msg);
 
 #define ROSTOOLS_ASSERT(Expr, Msg) __ROSTOOLS_ASSERT(#Expr, Expr, __FILE__, __LINE__, Msg)
 

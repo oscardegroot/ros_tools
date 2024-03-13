@@ -1,39 +1,35 @@
 cmake_minimum_required(VERSION 3.8)
 project(ros_tools)
 
+add_compile_options(-std=c++17)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # General requirements
 set(DEPENDENCIES
-  rclcpp
-  geometry_msgs
-  std_msgs
-  visualization_msgs
-  tf2
-  tf2_ros
-  eigen3_cmake_module
+  roscpp
+  roslib
 )
 
-# find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  ${DEPENDENCIES}
+)
 
-find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(visualization_msgs REQUIRED)
-
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
-
-find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
-# # BUILD ###
+catkin_package(
+  CATKIN_DEPENDS ${DEPENDENCIES}
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  LIBRARIES ${PROJECT_NAME}
+  DEPENDS EIGEN3
+)
+
 include_directories(
   include
+  ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
 )
 
@@ -47,32 +43,18 @@ add_library(${PROJECT_NAME} SHARED
   src/random_generator.cpp
   src/third_party/tkspline.cpp
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS}
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>"
-)
-target_link_libraries(${PROJECT_NAME})
-ament_target_dependencies(${PROJECT_NAME} ${DEPENDENCIES})
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT export_${PROJECT_NAME}
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
+add_definitions(-DMPC_PLANNER_ROS)
+
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}
-  DESTINATION include/)
-
-install(DIRECTORY include/third_party/
-  DESTINATION include/third_party/)
-
-install(DIRECTORY models
-  DESTINATION share/${PROJECT_NAME})
-
-ament_export_include_directories(include/${PROJECT_NAME} ${EIGEN3_INCLUDE_DIRS})
-ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(${DEPENDENCIES})
-
-ament_package()
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)

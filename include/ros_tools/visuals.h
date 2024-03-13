@@ -5,8 +5,6 @@
 
 // Still requires ROS support for now, but can be modified to use other visualisation tools
 
-// #define MPC_PLANNER_ROS 1
-
 #ifdef MPC_PLANNER_ROS
 
 #include <ros_tools/ros_visuals.h>

@@ -41,6 +41,11 @@ namespace RosTools
         return Eigen::Vector2d(_x_spline.deriv(2, t), _y_spline.deriv(2, t));
     }
 
+    Eigen::Vector2d Spline2D::getOrthogonal(double t) const
+    {
+        return Eigen::Vector2d(_y_spline.deriv(1, t), -_x_spline.deriv(1, t));
+    }
+
     // Compute distances between points
     void Spline2D::computeDistanceVector(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &out)
     {
