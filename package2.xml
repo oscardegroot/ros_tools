@@ -9,6 +9,15 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>eigen3_cmake_module</depend>
+
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

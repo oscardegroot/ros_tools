@@ -1,7 +1,7 @@
 #ifndef ros_tools_CONVERTIONS_H
 #define ros_tools_CONVERTIONS_H
 
-#if MPC_PLANNER_ROS == 1
+#ifdef MPC_PLANNER_ROS
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Quaternion.h>
 

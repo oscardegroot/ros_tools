@@ -124,7 +124,7 @@ namespace RosTools
         }
 
         // Add new markers
-        for (std::unique_ptr<ROSMarker> &marker : ros_markers_)
+        for (std::shared_ptr<ROSMarker> &marker : ros_markers_)
             marker->stamp();
 
         pub_.publish(marker_list_);
@@ -392,6 +392,14 @@ namespace RosTools
         marker_.pose.orientation.w = 1.0;
     }
 
+    void ROSLine::addLine(const Eigen::Vector2d &p1, const Eigen::Vector2d &p2, double z)
+    {
+
+        addLine(
+            vecToPoint(Eigen::Vector3d(p1(0), p1(1), z)),
+            vecToPoint(Eigen::Vector3d(p2(0), p2(1), z)));
+    }
+
     void ROSLine::addLine(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2)
     {
 
@@ -483,6 +491,12 @@ namespace RosTools
 
         // Add line to the publisher
         ros_publisher_->add(marker_);
+    }
+
+    void ROSPointMarker::addPointMarker(const Eigen::Vector2d &p1, double z)
+    {
+
+        addPointMarker(vecToPoint(Eigen::Vector3d(p1(0), p1(1), z)));
     }
 
     void ROSPointMarker::addPointMarker(const Eigen::Vector3d &p1)
@@ -681,6 +695,16 @@ namespace RosTools
         marker_.pose.orientation.w = 1.0;
     }
 
+    void ROSModelMarker::addPointMarker(const Eigen::Vector2d &p1, double z)
+    {
+        geometry_msgs::Point result;
+        result.x = p1(0);
+        result.y = p1(1);
+        result.z = z;
+
+        addPointMarker(result);
+    }
+
     void ROSModelMarker::addPointMarker(const Eigen::Vector3d &p1)
     {
         geometry_msgs::Point result;
@@ -710,7 +734,7 @@ namespace RosTools
 
         addPointMarker(result);
     }
-};
+}
 
 #else
 

@@ -69,6 +69,7 @@ namespace RosTools
             }
         }
     };
+}
 #else
 
 #include <rclcpp/rclcpp.hpp>
