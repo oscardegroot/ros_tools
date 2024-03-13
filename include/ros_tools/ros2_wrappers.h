@@ -3,6 +3,40 @@
 
 #include <rclcpp/rclcpp.hpp>
 
+#define STATIC_NODE_POINTER StaticNodePointer::getInstance()
+#define GET_STATIC_NODE_POINTER() StaticNodePointer::getInstance().getNodePointer()
+
+/** @brief get a globally accessible node reference */
+class StaticNodePointer
+{
+public:
+    static StaticNodePointer &getInstance()
+    {
+        static StaticNodePointer instance;
+
+        return instance;
+    }
+
+    void init(rclcpp::Node *node)
+    {
+        _node = node;
+    }
+
+    rclcpp::Node *getNodePointer()
+    {
+        if (_node == nullptr)
+            throw std::runtime_error("StaticNodePointer was not initialized (run STATIC_NODE_POINTER.init(node) first!)");
+
+        return _node;
+    }
+
+private:
+    StaticNodePointer() = default;
+    ~StaticNodePointer() = default;
+
+    rclcpp::Node *_node{nullptr};
+};
+
 /** @brief from Autoware */
 template <class T>
 bool updateParam(const std::vector<rclcpp::Parameter> &params, const std::string &name, T &value)

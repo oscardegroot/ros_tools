@@ -21,12 +21,12 @@ inline std::string getPackagePath(const std::string &package_name)
 
 inline std::string getPackagePath(const std::string &&package_name)
 {
-    return ament_index_cpp::get_package_share_directory(package_name) + "/../../../src/" + package_name + "/";
+    return ament_index_cpp::get_package_share_directory(package_name) + "/";
 }
 
 inline std::string getPackagePath(const std::string &package_name)
 {
-    return ament_index_cpp::get_package_share_directory(package_name) + "/../../../src/" + package_name + "/";
+    return ament_index_cpp::get_package_share_directory(package_name) + "/";
 }
 
 #endif

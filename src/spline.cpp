@@ -6,34 +6,39 @@
 namespace RosTools
 {
 
+    /** @note a spline parameterized by distance s */
     Spline2D::Spline2D(const std::vector<double> &x, const std::vector<double> &y)
     {
         // Compute the distance vector
         computeDistanceVector(x, y, _s_vector);
 
         // Initialize two splines for x and y
-        _x_spline.set_points(_s_vector, x);
-        _y_spline.set_points(_s_vector, y);
+        _t_vector = _s_vector; // Spline in s
+
+        _x_spline.set_points(_t_vector, x);
+        _y_spline.set_points(_t_vector, y);
     }
 
-    Spline2D::Spline2D(const tk::spline &x, const tk::spline &y, const std::vector<double> &s_vector)
-        : _x_spline(x), _y_spline(y), _s_vector(s_vector)
+    /** @note a spline parameterized over another vector t*/
+    Spline2D::Spline2D(const tk::spline &x, const tk::spline &y, const std::vector<double> &t_vector)
+        : _x_spline(x), _y_spline(y), _t_vector(t_vector)
     {
+        computeDistanceVector(_x_spline.m_y_, _y_spline.m_y_, _s_vector); // Compute distances
     }
 
-    Eigen::Vector2d Spline2D::getPoint(double s) const
+    Eigen::Vector2d Spline2D::getPoint(double t) const
     {
-        return Eigen::Vector2d(_x_spline(s), _y_spline(s));
+        return Eigen::Vector2d(_x_spline(t), _y_spline(t));
     }
 
-    Eigen::Vector2d Spline2D::getVelocity(double s) const
+    Eigen::Vector2d Spline2D::getVelocity(double t) const
     {
-        return Eigen::Vector2d(_x_spline.deriv(1, s), _y_spline.deriv(1, s));
+        return Eigen::Vector2d(_x_spline.deriv(1, t), _y_spline.deriv(1, t));
     }
 
-    Eigen::Vector2d Spline2D::getAcceleration(double s) const
+    Eigen::Vector2d Spline2D::getAcceleration(double t) const
     {
-        return Eigen::Vector2d(_x_spline.deriv(2, s), _y_spline.deriv(2, s));
+        return Eigen::Vector2d(_x_spline.deriv(2, t), _y_spline.deriv(2, t));
     }
 
     // Compute distances between points
@@ -58,20 +63,20 @@ namespace RosTools
     }
 
     // Find the distance that we travelled on the spline
-    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &s_out) const
+    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out) const
     {
-        s_out = findClosestSRecursively(point, 0., _s_vector.back(), 0);
+        t_out = findClosestSRecursively(point, 0., _t_vector.back(), 0);
 
-        for (size_t i = 0; i < _s_vector.size() - 1; i++)
+        for (size_t i = 0; i < _t_vector.size() - 1; i++)
         {
-            if (s_out > _s_vector[i] && s_out < _s_vector[i + 1])
+            if (t_out > _t_vector[i] && t_out < _t_vector[i + 1])
             {
                 segment_out = i; // Find the index to match the spline variable computed
                 return;
             }
         }
 
-        segment_out = _s_vector.size() - 1;
+        segment_out = _t_vector.size() - 1;
     }
 
     double Spline2D::findClosestSRecursively(const Eigen::Vector2d &point, double low, double high, int num_recursions) const
@@ -86,9 +91,9 @@ namespace RosTools
         }
 
         // Computes the distance between point "s" on the spline and a vehicle position
-        auto dist_to_spline = [&](double s, const Eigen::Vector2d &point)
+        auto dist_to_spline = [&](double t, const Eigen::Vector2d &point)
         {
-            return RosTools::distance(getPoint(s), point);
+            return RosTools::distance(getPoint(t), point);
         };
 
         // Compute a middle s value

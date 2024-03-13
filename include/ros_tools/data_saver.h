@@ -148,9 +148,8 @@ namespace RosTools
       if (idx_it == data_lookup_.end())
       {
         if (datasets_.size() > 1e5)
-          std::cout << "Warning: Data saver is not saving anymore data, too much different datasets were added already "
-                       "(safety to prevent allocation errors!)"
-                    << std::endl;
+          LOG_WARN("Warning: Data saver is not saving anymore data, too much different datasets were added already "
+                   "(safety to prevent allocation errors!)");
 
         // Create a new data set, if none exists with this name
         datasets_.emplace_back();
