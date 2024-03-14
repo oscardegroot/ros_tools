@@ -24,6 +24,7 @@ catkin_package(
   CATKIN_DEPENDS ${DEPENDENCIES}
   INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   LIBRARIES ${PROJECT_NAME}
+  DEPENDS EIGEN3
 )
 
 include_directories(
@@ -32,7 +33,7 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   src/ros_visuals.cpp
   src/spline.cpp
   src/convertions.cpp
@@ -47,14 +48,13 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_definitions(-DMPC_PLANNER_ROS)
 
-# ## Test Case ####
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_spline.cpp)
-# target_link_libraries(${PROJECT_NAME}-test
-# ${PROJECT_NAME}
-# ${catkin_LIBRARIES}
-# )
-# install(TARGETS ${PROJECT_NAME}
-# ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-# LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-# RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)

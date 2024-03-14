@@ -11,6 +11,7 @@
 
   <depend>roscpp</depend>
   <depend>roslib</depend>
+  <depend>eigen</depend>
 
   <export>
     <build_type>catkin</build_type>
