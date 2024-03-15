@@ -75,7 +75,8 @@ namespace RosTools
 
     void Instrumentor::BeginSession(const std::string &name, const std::string &filepath)
     {
-        std::string full_filepath = getPackagePath(name) + "/" + filepath;
+        std::string full_filepath = getPackagePath(name) + filepath;
+        LOG_VALUE("Profiling Path", full_filepath);
         m_OutputStream.open(full_filepath);
         WriteHeader();
         m_CurrentSession = new InstrumentationSession{name};
