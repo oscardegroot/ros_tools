@@ -8,12 +8,12 @@
 
 inline std::string getPackagePath(const std::string &&package_name)
 {
-    return ros::package::getPath(package_name);
+    return ros::package::getPath(package_name) + "/";
 }
 
 inline std::string getPackagePath(const std::string &package_name)
 {
-    return ros::package::getPath(package_name);
+    return ros::package::getPath(package_name) + "/";
 }
 
 #else
