@@ -13,6 +13,7 @@ namespace RosTools
     public:
         Spline2D(const std::vector<double> &x, const std::vector<double> &y);
         Spline2D(const tk::spline &x, const tk::spline &y, const std::vector<double> &t_vector);
+        Spline2D(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &t_vector);
 
         Eigen::Vector2d getPoint(double t) const;
         Eigen::Vector2d getVelocity(double t) const;
@@ -34,6 +35,7 @@ namespace RosTools
 
         tk::spline &getXSpline() { return _x_spline; }
         tk::spline &getYSpline() { return _y_spline; }
+        std::vector<double> &getTVector() { return _t_vector; }
 
     private:
         tk::spline _x_spline, _y_spline;

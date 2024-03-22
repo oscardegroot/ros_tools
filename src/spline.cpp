@@ -26,6 +26,17 @@ namespace RosTools
         computeDistanceVector(_x_spline.m_y_, _y_spline.m_y_, _s_vector); // Compute distances
     }
 
+    Spline2D::Spline2D(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &t)
+        : _t_vector(t)
+    {
+        // Compute the distance vector
+        computeDistanceVector(x, y, _s_vector);
+
+        // Initialize two splines for x and y
+        _x_spline.set_points(_t_vector, x);
+        _y_spline.set_points(_t_vector, y);
+    }
+
     Eigen::Vector2d Spline2D::getPoint(double t) const
     {
         return Eigen::Vector2d(_x_spline(t), _y_spline(t));
