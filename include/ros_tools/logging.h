@@ -9,10 +9,10 @@
 #define LOG_ERROR(...) ROS_ERROR_STREAM(__VA_ARGS__)
 #define LOG_DEBUG(...) ROS_DEBUG_STREAM(__VA_ARGS__)
 #define LOG_SUCCESS(...) ROS_INFO_STREAM("\033[32m" << __VA_ARGS__ << "\033[0m")
-#define LOG_INFO_THROTTLE(rate, ...) ROS_INFO_STREAM_THROTTLE(rate, __VA_ARGS__)
-#define LOG_WARN_THROTTLE(rate, ...) ROS_WARN_STREAM_THROTTLE(rate, "\033[33m" << __VA_ARGS__ << "\033[0m")
-#define LOG_ERROR_THROTTLE(rate, ...) ROS_ERROR_STREAM_THROTTLE(rate, __VA_ARGS__)
-#define LOG_DEBUG_THROTTLE(rate, ...) ROS_DEBUG_STREAM_THROTTLE(rate, __VA_ARGS__)
+#define LOG_INFO_THROTTLE(rate, ...) ROS_INFO_STREAM_THROTTLE(rate / 1000., __VA_ARGS__)
+#define LOG_WARN_THROTTLE(rate, ...) ROS_WARN_STREAM_THROTTLE(rate / 1000., "\033[33m" << __VA_ARGS__ << "\033[0m")
+#define LOG_ERROR_THROTTLE(rate, ...) ROS_ERROR_STREAM_THROTTLE(rate / 1000., __VA_ARGS__)
+#define LOG_DEBUG_THROTTLE(rate, ...) ROS_DEBUG_STREAM_THROTTLE(rate / 1000., __VA_ARGS__)
 #else
 #include <rclcpp/logging.hpp>
 #include <rclcpp/clock.hpp>
