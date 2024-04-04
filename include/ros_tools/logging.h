@@ -16,31 +16,39 @@
 #else
 #include <rclcpp/logging.hpp>
 #include <rclcpp/clock.hpp>
+#include <ros_tools/ros2_wrappers.h>
 
 #include <filesystem>
 #define LOGGING_NAME std::filesystem::path(__FILE__).filename().replace_extension("").string()
-#define LOG_INFO(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
-#define LOG_WARN(...) RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[33m" << __VA_ARGS__ << "\033[0m")
-#define LOG_ERROR(...) RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
-#define LOG_SUCCESS(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[32m" << __VA_ARGS__ "\033[0m")
-#define LOG_DEBUG(...) RCLCPP_DEBUG_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
+#define LOG_INFO(...) RCLCPP_INFO_STREAM(GET_STATIC_NODE_POINTER()->get_logger(), __VA_ARGS__)
+#define LOG_WARN(...) RCLCPP_WARN_STREAM(GET_STATIC_NODE_POINTER()->get_logger(), "\033[33m" << __VA_ARGS__ << "\033[0m")
+#define LOG_ERROR(...) RCLCPP_ERROR_STREAM(GET_STATIC_NODE_POINTER()->get_logger(), __VA_ARGS__)
+#define LOG_SUCCESS(...) RCLCPP_INFO_STREAM(GET_STATIC_NODE_POINTER()->get_logger(), "\033[32m" << __VA_ARGS__ "\033[0m")
+#define LOG_DEBUG(...) RCLCPP_DEBUG_STREAM(GET_STATIC_NODE_POINTER()->get_logger(), __VA_ARGS__)
+// #define LOG_INFO(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
+// #define LOG_WARN(...) RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[33m" << __VA_ARGS__ << "\033[0m")
+// #define LOG_ERROR(...) RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
+// #define LOG_SUCCESS(...) RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGING_NAME), "\033[32m" << __VA_ARGS__ "\033[0m")
+// #define LOG_DEBUG(...) RCLCPP_DEBUG_STREAM(rclcpp::get_logger(LOGGING_NAME), __VA_ARGS__)
 
 inline void __RCLCPP_WARN_STREAM_THROTTLE(const double rate, const std::string &msg)
 {
     auto clock = rclcpp::Clock();
-    RCLCPP_WARN_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), clock, rate, "\033[33m" << msg << "\033[0m");
+    RCLCPP_WARN_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger() // rclcpp::get_logger(LOGGING_NAME)
+                                ,
+                                clock, rate, "\033[33m" << msg << "\033[0m");
 }
 
 inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &msg)
 {
     auto clock = rclcpp::Clock();
-    RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), clock, rate, msg);
+    RCLCPP_INFO_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger(), clock, rate, msg);
 }
 
 #define LOG_INFO_THROTTLE(rate, ...) __RCLCPP_INFO_STREAM_THROTTLE(rate, __VA_ARGS__)
 #define LOG_WARN_THROTTLE(rate, ...) __RCLCPP_WARN_STREAM_THROTTLE(rate, __VA_ARGS__)
-#define LOG_ERROR_THROTTLE(rate, ...) RCLCPP_ERROR_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), rate, __VA_ARGS__)
-#define LOG_DEBUG_THROTTLE(rate, ...) RCLCPP_DEBUG_STREAM_THROTTLE(rclcpp::get_logger(LOGGING_NAME), rate, __VA_ARGS__)
+#define LOG_ERROR_THROTTLE(rate, ...) RCLCPP_ERROR_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger(), rate, __VA_ARGS__)
+#define LOG_DEBUG_THROTTLE(rate, ...) RCLCPP_DEBUG_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger(), rate, __VA_ARGS__)
 // #else
 // #include <iostream>
 // #define LOG_INFO(...) std::cout << __VA_ARGS__ << std::endl

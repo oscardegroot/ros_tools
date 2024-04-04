@@ -15,6 +15,7 @@ namespace RosTools
     {
     public:
         Benchmarker(const std::string &name);
+
         // Benchmarker(const Benchmarker &other)
         // {
         //     name_ = other.name_;
@@ -44,6 +45,7 @@ namespace RosTools
 
         void start();
         double stop();
+        void print();
 
         double getLast() const;
 
@@ -78,6 +80,14 @@ namespace RosTools
                 _benchmarkers.insert(std::make_pair(benchmark_name, Benchmarker(benchmark_name)));
             }
             return _benchmarkers.at(benchmark_name); // Retrieve the publisher from the map
+        }
+
+        void print()
+        {
+            for (auto &bm : _benchmarkers)
+            {
+                bm.second.print();
+            }
         }
 
     private:
