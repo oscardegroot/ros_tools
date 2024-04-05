@@ -36,6 +36,7 @@ namespace RosTools
         tk::spline &getXSpline() { return _x_spline; }
         tk::spline &getYSpline() { return _y_spline; }
         std::vector<double> &getTVector() { return _t_vector; }
+        std::vector<double> &getDistanceVector() { return _s_vector; }
 
     private:
         tk::spline _x_spline, _y_spline;

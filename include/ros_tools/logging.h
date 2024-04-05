@@ -33,7 +33,7 @@
 
 inline void __RCLCPP_WARN_STREAM_THROTTLE(const double rate, const std::string &msg)
 {
-    auto clock = rclcpp::Clock();
+    auto clock = *GET_STATIC_NODE_POINTER()->get_clock();
     RCLCPP_WARN_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger() // rclcpp::get_logger(LOGGING_NAME)
                                 ,
                                 clock, rate, "\033[33m" << msg << "\033[0m");
@@ -41,7 +41,7 @@ inline void __RCLCPP_WARN_STREAM_THROTTLE(const double rate, const std::string &
 
 inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &msg)
 {
-    auto clock = rclcpp::Clock();
+    auto clock = *GET_STATIC_NODE_POINTER()->get_clock();
     RCLCPP_INFO_STREAM_THROTTLE(GET_STATIC_NODE_POINTER()->get_logger(), clock, rate, msg);
 }
 
