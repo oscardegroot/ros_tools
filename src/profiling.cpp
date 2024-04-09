@@ -14,15 +14,15 @@ namespace RosTools
     }
 
     // Print results on destruct
-    // Benchmarker::~Benchmarker()
-    // {
-    //     double average_run_time = total_duration_ / ((double)total_runs_) * 1000.0;
+    void Benchmarker::print()
+    {
+        double average_run_time = total_duration_ / ((double)total_runs_) * 1000.0;
 
-    //     LOG_DIVIDER();
-    //     LOG_VALUE("Timing of", name_);
-    //     LOG_VALUE("Average (ms)", average_run_time);
-    //     LOG_VALUE("Max (ms)", max_duration_ * 1000.0);
-    // }
+        LOG_DIVIDER();
+        LOG_VALUE("Timing of", name_);
+        LOG_VALUE("Average (ms)", average_run_time);
+        LOG_VALUE("Max (ms)", max_duration_ * 1000.0);
+    }
 
     void Benchmarker::start()
     {
