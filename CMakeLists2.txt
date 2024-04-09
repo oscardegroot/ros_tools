@@ -33,6 +33,7 @@ include_directories(
 add_library(${PROJECT_NAME} SHARED
   src/ros_visuals.cpp
   src/spline.cpp
+  src/spline_four_d.cpp
   src/convertions.cpp
   src/data_saver.cpp
   src/math.cpp
