@@ -16,38 +16,14 @@ namespace RosTools
     public:
         Benchmarker(const std::string &name);
 
-        // Benchmarker(const Benchmarker &other)
-        // {
-        //     name_ = other.name_;
-        //     running_ = other.running_;
-        //     start_time_ = other.start_time_;
-        //     total_duration_ = other.total_duration_;
-        //     max_duration_ = other.max_duration_;
-        //     min_duration_ = other.min_duration_;
-        //     last_ = other.last_;
-        //     total_runs_ = other.total_runs_;
-        // }
-        // Benchmarker &operator=(const Benchmarker &other)
-        // {
-        //     name_ = other.name_;
-        //     running_ = other.running_;
-        //     start_time_ = other.start_time_;
-        //     total_duration_ = other.total_duration_;
-        //     max_duration_ = other.max_duration_;
-        //     min_duration_ = other.min_duration_;
-        //     last_ = other.last_;
-        //     total_runs_ = other.total_runs_;
-        //     return *this;
-        // }
-
-        // Print results on destruct
-        // ~Benchmarker();
-
         void start();
         double stop();
+        void reset();
+
         void print();
 
         double getLast() const;
+        double getTotalDuration() const;
 
     private:
         std::chrono::system_clock::time_point start_time_;
