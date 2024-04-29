@@ -93,15 +93,17 @@ namespace RosTools
         SaveData(path, file_name);
     }
 
-    // Use the given path
-    void DataSaver::SaveData(const std::string &file_path, const std::string &file_name)
+    std::string DataSaver::getFilePath(const std::string &file_path, const std::string &file_name, bool create_folder)
     {
         // Create directories if they do not exist
         std::string complete_file_path = file_path + "/" + file_name;
         std::string folder_path = complete_file_path.substr(0, complete_file_path.rfind("/"));
 
-        if (std::filesystem::create_directories(folder_path))
-            LOG_INFO("Data Saver: Creating Directory Path: " << folder_path);
+        if (create_folder)
+        {
+            if (std::filesystem::create_directories(folder_path))
+                LOG_INFO("Data Saver: Creating Directory Path: " << folder_path);
+        }
 
         std::string full_file_path;
         if (add_timestamp_)
@@ -123,12 +125,20 @@ namespace RosTools
             timestamp += ValueWithZero(local_time.tm_hour);
             timestamp += ValueWithZero(local_time.tm_min);
 
-            full_file_path = complete_file_path + "/" + datestamp + "-" + timestamp + ".txt";
+            full_file_path = complete_file_path + "_" + datestamp + "-" + timestamp + ".txt";
         }
         else
         {
             full_file_path = complete_file_path + ".txt";
         }
+
+        return full_file_path;
+    }
+
+    // Use the given path
+    void DataSaver::SaveData(const std::string &file_path, const std::string &file_name)
+    {
+        std::string full_file_path = getFilePath(file_path, file_name, true);
 
         // Setup a file stream
         std::ofstream export_file;

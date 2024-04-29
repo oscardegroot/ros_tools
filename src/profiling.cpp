@@ -54,6 +54,17 @@ namespace RosTools
 
     double Benchmarker::getLast() const { return last_; }
 
+    double Benchmarker::getTotalDuration() const { return total_duration_; }
+
+    void Benchmarker::reset()
+    {
+        total_duration_ = 0.0;
+        max_duration_ = -1.0;
+        min_duration_ = 99999.0;
+        last_ = -1.0;
+        total_runs_ = 0;
+    }
+
     Timer::Timer(const double &duration) { duration_ = duration; }
 
     void Timer::start() { start_time = std::chrono::system_clock::now(); }

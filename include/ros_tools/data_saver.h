@@ -178,9 +178,7 @@ namespace RosTools
       datasets_[idx]->AddData(data_value);
     }
 
-    /* Save data
-     * file_name: name of the file without folder or extension
-     */
+    std::string getFilePath(const std::string &file_path, const std::string &file_name, bool create_folder = true);
     void SaveData(const std::string &file_name);
     void SaveData(const std::string &file_path, const std::string &file_name);
 

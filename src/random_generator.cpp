@@ -37,7 +37,10 @@ namespace RosTools
 
     double RandomGenerator::Gaussian(double mean, double stddev)
     {
-        return BivariateGaussian(Eigen::Vector2d(mean, mean), stddev, stddev, 0.)(0);
+        std::normal_distribution<> dist(mean, stddev);
+
+        // return BivariateGaussian(Eigen::Vector2d(mean, mean), stddev, stddev, 0.)(0);
+        return dist(rng_gaussian_);
     }
 
     void RandomGenerator::uniformToGaussian2D(Eigen::Vector2d &uniform_variables)
