@@ -78,21 +78,70 @@ namespace RosTools
         _y_spline.getParameters(segment_index, ay, by, cy, dy);
     }
 
-    // Find the distance that we travelled on the spline
-    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out) const
+    void Spline2D::initializeClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out)
     {
-        t_out = findClosestSRecursively(point, 0., _t_vector.back(), 0);
+        // Computes the distance between point "s" on the spline and a vehicle position
+        auto dist_to_spline = [&](double t, const Eigen::Vector2d &point)
+        {
+            return RosTools::distance(getPoint(t), point);
+        };
 
+        double min_dist = 1e9;
+        int local_segment_out = -1;
+        double local_t_out = -1.;
         for (size_t i = 0; i < _t_vector.size() - 1; i++)
+        {
+            double cur_t = findClosestSRecursively(point, _t_vector[i], _t_vector[i + 1], 10); // Closest in this segment
+
+            double cur_dist = dist_to_spline(cur_t, point);
+            if (cur_dist < min_dist)
+            {
+                min_dist = cur_dist;
+                local_t_out = cur_t;
+                local_segment_out = i;
+            }
+        }
+
+        ROSTOOLS_ASSERT(local_segment_out != -1, "Could not find a closest point on the spline");
+        segment_out = local_segment_out;
+        t_out = local_t_out;
+        _closest_segment = segment_out;
+    }
+
+    // Find the distance that we travelled on the spline
+    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out)
+    {
+        if (_closest_segment == -1 || RosTools::distance(_prev_query_point, point) > 5.) // Non-initialized
+        {
+            initializeClosestPoint(point, segment_out, t_out);
+            LOG_INFO("Initialized closest point on spline: " << _closest_segment);
+            _prev_query_point = point;
+
+            return;
+        }
+        _prev_query_point = point;
+
+        int first_segment = std::max(0, _closest_segment - 5);
+        int last_segment = std::min((int)_t_vector.size() - 1, _closest_segment + 5);
+
+        // Search locally
+        t_out = findClosestSRecursively(point,
+                                        _t_vector[first_segment],
+                                        _t_vector[last_segment], 0);
+
+        for (size_t i = first_segment; i < last_segment; i++)
         {
             if (t_out > _t_vector[i] && t_out < _t_vector[i + 1])
             {
                 segment_out = i; // Find the index to match the spline variable computed
+                _closest_segment = segment_out;
+
                 return;
             }
         }
 
-        segment_out = _t_vector.size() - 1;
+        _closest_segment = segment_out;
+        segment_out = last_segment;
     }
 
     double Spline2D::findClosestSRecursively(const Eigen::Vector2d &point, double low, double high, int num_recursions) const

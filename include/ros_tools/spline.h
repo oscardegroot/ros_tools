@@ -21,7 +21,8 @@ namespace RosTools
         Eigen::Vector2d getOrthogonal(double t) const;
 
         /** @brief Check the entire spline for the closest point */
-        void findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out) const;
+        void initializeClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out);
+        void findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out);
 
         void getParameters(int segment_index,
                            double &ax, double &bx, double &cx, double &dx,
@@ -43,6 +44,10 @@ namespace RosTools
 
         std::vector<double> _t_vector; // Both splines are defined over another parameter t
         std::vector<double> _s_vector; // Holds distances at which each spline begins
+
+        // Finding the closest point
+        int _closest_segment{-1};
+        Eigen::Vector2d _prev_query_point;
 
         void computeDistanceVector(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &out);
 
