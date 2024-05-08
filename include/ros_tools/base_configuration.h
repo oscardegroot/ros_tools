@@ -5,7 +5,6 @@
 
 #ifdef MPC_PLANNER_ROS
 #include <ros/ros.h>
-#include <string>
 
 namespace RosTools
 {
