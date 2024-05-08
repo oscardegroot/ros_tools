@@ -19,11 +19,14 @@ namespace RosTools
         void start();
         double stop();
         void reset();
+        void cancel();
 
         void print();
 
         double getLast() const;
         double getTotalDuration() const;
+
+        bool isRunning() const;
 
     private:
         std::chrono::system_clock::time_point start_time_;
@@ -81,8 +84,9 @@ namespace RosTools
     {
     public:
         // Duration in s
-        Timer(const double &duration);
+        Timer(const double &duration = 0.);
 
+        void setDuration(const double &duration);
         void start();
 
         double currentDuration();

@@ -30,6 +30,11 @@ namespace RosTools
         start_time_ = std::chrono::system_clock::now();
     }
 
+    void Benchmarker::cancel()
+    {
+        running_ = false;
+    }
+
     double Benchmarker::stop()
     {
         if (!running_)
@@ -46,9 +51,9 @@ namespace RosTools
 
         total_duration_ += current_duration.count();
         total_runs_++;
-        running_ = false;
 
         last_ = current_duration.count();
+        running_ = false;
         return last_;
     }
 
@@ -63,10 +68,14 @@ namespace RosTools
         min_duration_ = 99999.0;
         last_ = -1.0;
         total_runs_ = 0;
+        running_ = false;
     }
+
+    bool Benchmarker::isRunning() const { return running_; }
 
     Timer::Timer(const double &duration) { duration_ = duration; }
 
+    void Timer::setDuration(const double &duration) { duration_ = duration; }
     void Timer::start() { start_time = std::chrono::system_clock::now(); }
 
     double Timer::currentDuration()
