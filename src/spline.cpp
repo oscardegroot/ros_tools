@@ -114,7 +114,6 @@ namespace RosTools
         if (_closest_segment == -1 || RosTools::distance(_prev_query_point, point) > 5.) // Non-initialized
         {
             initializeClosestPoint(point, segment_out, t_out);
-            LOG_INFO("Initialized closest point on spline: " << _closest_segment);
             _prev_query_point = point;
 
             return;
@@ -129,7 +128,7 @@ namespace RosTools
                                         _t_vector[first_segment],
                                         _t_vector[last_segment], 0);
 
-        for (size_t i = first_segment; i < last_segment; i++)
+        for (int i = first_segment; i < last_segment; i++)
         {
             if (t_out > _t_vector[i] && t_out < _t_vector[i + 1])
             {
