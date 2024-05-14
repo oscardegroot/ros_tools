@@ -145,14 +145,17 @@ namespace RosTools
 
     double Spline2D::findClosestSRecursively(const Eigen::Vector2d &point, double low, double high, int num_recursions) const
     {
-        // Stop after x recursions
-        if (num_recursions > 20)
-        {
-            if (std::abs(high - low) > 1e-3)
-                LOG_ERROR("FindClosestSRecursively did not find an accurate s (accuracy = "
-                          << std::abs(high - low) << " | tolerance = 1e-3)");
+        if (std::abs(high - low) <= 1e-4 || num_recursions > 40)
             return (low + high) / 2.;
-        }
+
+        // // Stop after x recursions
+        // if (num_recursions > 20)
+        // {
+        //     if (std::abs(high - low) > 1e-3)
+        //         LOG_ERROR("FindClosestSRecursively did not find an accurate s (accuracy = "
+        //                   << std::abs(high - low) << " | tolerance = 1e-3)");
+        //     return (low + high) / 2.;
+        // }
 
         // Computes the distance between point "s" on the spline and a vehicle position
         auto dist_to_spline = [&](double t, const Eigen::Vector2d &point)
