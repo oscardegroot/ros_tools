@@ -42,6 +42,16 @@ namespace RosTools
         return Eigen::Vector2d(_x_spline(t), _y_spline(t));
     }
 
+    double Spline2D::getX(double t) const
+    {
+        return _x_spline(t);
+    }
+
+    double Spline2D::getY(double t) const
+    {
+        return _y_spline(t);
+    }
+
     Eigen::Vector2d Spline2D::getVelocity(double t) const
     {
         return Eigen::Vector2d(_x_spline.deriv(1, t), _y_spline.deriv(1, t));
@@ -54,7 +64,7 @@ namespace RosTools
 
     Eigen::Vector2d Spline2D::getOrthogonal(double t) const
     {
-        return Eigen::Vector2d(_y_spline.deriv(1, t), -_x_spline.deriv(1, t));
+        return Eigen::Vector2d(_y_spline.deriv(1, t), -_x_spline.deriv(1, t)).normalized();
     }
 
     // Compute distances between points
@@ -74,8 +84,34 @@ namespace RosTools
                                  double &ax, double &bx, double &cx, double &dx,
                                  double &ay, double &by, double &cy, double &dy) const
     {
+        // Extrapolate with a constant path based on the last segment
+        if (segment_index > numSegments() - 1)
+        {
+            getParameters(numSegments() - 1,
+                          ax, bx, cx, dx,
+                          ay, by, cy, dy);
+
+            ax = 0.;
+            bx = 0.;
+            cx = 0.;
+
+            ay = 0.;
+            by = 0.;
+            cy = 0.;
+
+            return;
+        }
+
         _x_spline.getParameters(segment_index, ax, bx, cx, dx);
         _y_spline.getParameters(segment_index, ay, by, cy, dy);
+    }
+
+    double Spline2D::getSegmentStart(int segment_index) const
+    {
+        if (segment_index > numSegments() - 1)
+            return _t_vector.back();
+        else
+            return _t_vector[segment_index];
     }
 
     void Spline2D::initializeClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out)
@@ -109,10 +145,11 @@ namespace RosTools
     }
 
     // Find the distance that we travelled on the spline
-    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out)
+    void Spline2D::findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out, int range)
     {
         if (_closest_segment == -1 || RosTools::distance(_prev_query_point, point) > 5.) // Non-initialized
         {
+            // LOG_INFO("Initialize Closest Point");
             initializeClosestPoint(point, segment_out, t_out);
             _prev_query_point = point;
 
@@ -120,13 +157,14 @@ namespace RosTools
         }
         _prev_query_point = point;
 
-        int first_segment = std::max(0, _closest_segment - 5);
-        int last_segment = std::min((int)_t_vector.size() - 1, _closest_segment + 5);
+        int first_segment = std::max(0, _closest_segment - range);
+        int last_segment = std::min((int)_t_vector.size() - 1, _closest_segment + range);
 
         // Search locally
         t_out = findClosestSRecursively(point,
                                         _t_vector[first_segment],
                                         _t_vector[last_segment], 0);
+        // LOG_INFO("Recursive search between " << _t_vector[first_segment] << " and " << _t_vector[last_segment] << ": " << t_out);
 
         for (int i = first_segment; i < last_segment; i++)
         {
@@ -146,16 +184,13 @@ namespace RosTools
     double Spline2D::findClosestSRecursively(const Eigen::Vector2d &point, double low, double high, int num_recursions) const
     {
         if (std::abs(high - low) <= 1e-4 || num_recursions > 40)
-            return (low + high) / 2.;
+        {
+            if (num_recursions > 40)
+                LOG_WARN_THROTTLE(1500, "Recursion count exceeded.");
 
-        // // Stop after x recursions
-        // if (num_recursions > 20)
-        // {
-        //     if (std::abs(high - low) > 1e-3)
-        //         LOG_ERROR("FindClosestSRecursively did not find an accurate s (accuracy = "
-        //                   << std::abs(high - low) << " | tolerance = 1e-3)");
-        //     return (low + high) / 2.;
-        // }
+            // LOG_INFO("Difference between " << high << " and " << low << " < 1e-4. Returning " << (low + high) / 2.);
+            return (low + high) / 2.;
+        }
 
         // Computes the distance between point "s" on the spline and a vehicle position
         auto dist_to_spline = [&](double t, const Eigen::Vector2d &point)
@@ -175,6 +210,45 @@ namespace RosTools
             return findClosestSRecursively(point, low, mid, num_recursions + 1);
         else
             return findClosestSRecursively(point, mid, high, num_recursions + 1);
+    }
+
+    void Spline2D::samplePoints(std::vector<Eigen::Vector2d> &points, double ds) const
+    {
+        std::vector<double> angles;
+        samplePoints(points, angles, ds);
+    }
+
+    void Spline2D::samplePoints(std::vector<Eigen::Vector2d> &points, std::vector<double> &angles, double ds) const
+    {
+        points.clear();
+        angles.clear();
+        double length = this->length();
+
+        double spline_sample_dist = std::min(ds, length);
+        int n_spline_pts = ceil(length / spline_sample_dist);
+        points.resize(n_spline_pts);
+        angles.resize(n_spline_pts);
+
+        double s_cur = 0;
+        for (int i = 0; i < n_spline_pts; i++)
+        {
+            Eigen::Vector2d vel = getVelocity(s_cur);
+
+            points[i] = getPoint(s_cur);
+            angles[i] = std::atan2(vel(1), vel(0));
+
+            s_cur += spline_sample_dist;
+        }
+
+        // Check if we are not at our destination yet
+        double error = RosTools::distance(points.back(), getPoint(length));
+        if (error > 0.01)
+        {
+            Eigen::Vector2d vel = getVelocity(length);
+
+            points.emplace_back(getPoint(length));
+            angles.emplace_back(std::atan2(vel(1), vel(0)));
+        }
     }
 
     /** @note a spline parameterized by t_vector */

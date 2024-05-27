@@ -17,20 +17,26 @@ namespace RosTools
         Spline2D(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &t_vector);
 
         Eigen::Vector2d getPoint(double t) const;
+        double getX(double t) const;
+        double getY(double t) const;
+
         Eigen::Vector2d getVelocity(double t) const;
         Eigen::Vector2d getAcceleration(double t) const;
         Eigen::Vector2d getOrthogonal(double t) const;
 
+        void samplePoints(std::vector<Eigen::Vector2d> &points, double ds) const;
+        void samplePoints(std::vector<Eigen::Vector2d> &points, std::vector<double> &angles, double ds) const;
+
         /** @brief Check the entire spline for the closest point */
         void initializeClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out);
-        void findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out);
+        void findClosestPoint(const Eigen::Vector2d &point, int &segment_out, double &t_out, int range = 2);
 
         void getParameters(int segment_index,
                            double &ax, double &bx, double &cx, double &dx,
                            double &ay, double &by, double &cy, double &dy) const;
 
         int numSegments() const { return _x_spline.m_x_.size() - 1; }
-        double getSegmentStart(int index) const { return _t_vector[index]; };
+        double getSegmentStart(int index) const;
         // double getSegmentEnd(int index) const { return _s_vector[index]; };
         double length() const { return _s_vector.back(); }
         double parameterLength() const { return _t_vector.back(); }
@@ -59,8 +65,8 @@ namespace RosTools
     {
 
     public:
-        Spline4D(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& z, const std::vector<double>& w, const std::vector<double> &t_vector);
-        
+        Spline4D(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &z, const std::vector<double> &w, const std::vector<double> &t_vector);
+
         Eigen::Vector4d getPoint(double t) const;
 
         void getParameters(int segment_index,
@@ -85,7 +91,6 @@ namespace RosTools
 
         std::vector<double> _t_vector; // Both splines are defined over another parameter t
         std::vector<double> _s_vector; // Holds distances at which each spline begins
-
     };
 }
 
