@@ -13,6 +13,33 @@ namespace RosTools
         return -std::log(1 - p) / lambda;
     }
 
+    std::vector<double> linspace(double start, double end, int num)
+    {
+        std::vector<double> result;
+
+        if (num == 0)
+            return result;
+        if (num == 1)
+        {
+            result.push_back(end);
+            return result;
+        }
+        if (num == 2)
+        {
+            result.push_back(start);
+            result.push_back(end);
+        }
+
+        double delta = (end - start) / (num - 1);
+
+        result.push_back(start);
+        for (int i = 1; i < num - 1; ++i)
+            result.push_back(start + delta * i);
+        result.push_back(end);
+
+        return result;
+    }
+
     Eigen::Matrix2d rotationMatrixFromHeading(double heading)
     {
         Eigen::Matrix2d result;

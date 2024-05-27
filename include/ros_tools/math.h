@@ -9,6 +9,8 @@ namespace RosTools
 
     double ExponentialQuantile(double lambda, double p);
 
+    std::vector<double> linspace(double start, double end, int num);
+
     Eigen::Matrix2d rotationMatrixFromHeading(double heading);
 
     double Bisection(double low, double high, std::function<double(double)> func, double tol = 1e-3);
