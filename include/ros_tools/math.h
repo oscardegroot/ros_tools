@@ -3,6 +3,8 @@
 
 #include <Eigen/Dense>
 
+#include <vector>
+
 namespace RosTools
 {
     double distance(const Eigen::Vector2d &a, const Eigen::Vector2d &b);

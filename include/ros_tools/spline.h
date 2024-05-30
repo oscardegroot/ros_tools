@@ -23,6 +23,7 @@ namespace RosTools
         Eigen::Vector2d getVelocity(double t) const;
         Eigen::Vector2d getAcceleration(double t) const;
         Eigen::Vector2d getOrthogonal(double t) const;
+        double getPathAngle(double t) const;
 
         void samplePoints(std::vector<Eigen::Vector2d> &points, double ds) const;
         void samplePoints(std::vector<Eigen::Vector2d> &points, std::vector<double> &angles, double ds) const;
@@ -91,6 +92,59 @@ namespace RosTools
 
         std::vector<double> _t_vector; // Both splines are defined over another parameter t
         std::vector<double> _s_vector; // Holds distances at which each spline begins
+    };
+
+    template <int dim>
+    class Spline
+    {
+        typedef Eigen::Matrix<double, dim, 1> SplineVector;
+
+    public:
+        Spline(const std::vector<std::vector<double>> &points);
+        Spline(const std::vector<tk::spline> &splines, const std::vector<double> &t_vector);
+
+        Spline(const std::vector<std::vector<double>> &points, const std::vector<double> &t_vector);
+        Spline(const std::vector<std::vector<double>> &points, const std::vector<double> &t_vector,
+               const SplineVector &start_velocity);
+
+        SplineVector getPoint(double t) const;
+        double getCoordinate(double t, int coordinate) const;
+
+        SplineVector getVelocity(double t) const;
+        SplineVector getAcceleration(double t) const;
+        SplineVector getOrthogonal(double t) const;
+
+        // void samplePoints(std::vector<std::vector<double>> &points, double ds) const;
+        // void samplePoints(std::vector<std::vector<double>> &points, std::vector<double> &angles, double ds) const;
+
+        /** @brief Check the entire spline for the closest point */
+        void initializeClosestPoint(const SplineVector &point, int &segment_out, double &t_out);
+        void findClosestPoint(const SplineVector &point, int &segment_out, double &t_out, int range = 2);
+
+        void getParameters(int segment_index, std::vector<double> &a, std::vector<double> &b, std::vector<double> &c, std::vector<double> &d) const;
+
+        int numSegments() const { return _splines[0].m_x_.size() - 1; }
+        double getSegmentStart(int index) const;
+        double length() const { return _s_vector.back(); }
+        double parameterLength() const { return _t_vector.back(); }
+
+        std::vector<tk::spline> &getSplines() { return _splines; }
+        std::vector<double> &getTVector() { return _t_vector; }
+        std::vector<double> &getDistanceVector() { return _s_vector; }
+
+    private:
+        std::vector<tk::spline> _splines;
+
+        std::vector<double> _t_vector; // Both splines are defined over another parameter t
+        std::vector<double> _s_vector; // Holds distances at which each spline begins
+
+        // Finding the closest point
+        int _closest_segment{-1};
+        SplineVector _prev_query_point;
+
+        void computeDistanceVector(const std::vector<std::vector<double>> &points, std::vector<double> &out);
+
+        double findClosestSRecursively(const SplineVector &point, double low, double high, int num_recursions) const;
     };
 }
 
