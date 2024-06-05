@@ -8,6 +8,7 @@
 namespace RosTools
 {
 
+    /** @brief Fit a clothoid in 2D. Useful if waypoints are not dense enough */
     class Clothoid2D
     {
     public:
@@ -27,6 +28,7 @@ namespace RosTools
                          double sample_distance);
     };
 
+    /** @brief Fit a cubic spline in 2D. Useful for converting a set of points to a differentiable continuous function */
     class Spline2D
     {
 
