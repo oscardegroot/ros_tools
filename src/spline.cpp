@@ -1,5 +1,7 @@
 #include "ros_tools/spline.h"
 
+#include <third_party/clothoid.h>
+
 #include <ros_tools/logging.h>
 #include <ros_tools/math.h>
 
@@ -540,4 +542,70 @@ namespace RosTools
     template class Spline<2>;
     // template class Spline<3>;
     // template class Spline<4>;
+
+    Clothoid2D::Clothoid2D(std::vector<double> &waypoints_x, std::vector<double> &waypoints_y, std::vector<double> &waypoints_angle,
+                           double sample_distance)
+    {
+        _length = 0.;
+        fitClothoid(waypoints_x, waypoints_y, waypoints_angle, sample_distance);
+    }
+
+    void Clothoid2D::getPointsOnClothoid(std::vector<double> &x, std::vector<double> &y, std::vector<double> &s) const
+    {
+        x = _x;
+        y = _y;
+        s = _s;
+    }
+
+    void Clothoid2D::fitClothoid(std::vector<double> &waypoints_x, std::vector<double> &waypoints_y, std::vector<double> &waypoints_angle,
+                                 double sample_distance)
+    {
+
+        double k, dk, L;
+        int n_clothoid = 0;
+        double last_s = 0.;
+
+        int max_clothoid_size = std::ceil(100. / sample_distance);
+        std::vector<double> X, Y;
+        X.reserve(max_clothoid_size);
+        Y.reserve(max_clothoid_size);
+
+        _s.push_back(0);
+
+        for (size_t i = 0; i < waypoints_x.size() - 1; i++) // For each set of waypoints
+        {
+            // Build a clothoid
+            Clothoid::buildClothoid(waypoints_x[i], waypoints_y[i], waypoints_angle[i],
+                                    waypoints_x[i + 1], waypoints_y[i + 1], waypoints_angle[i + 1],
+                                    k, dk, L);
+
+            n_clothoid = std::max((int)std::ceil(L / sample_distance), 2); // Sample this many points
+
+            X.resize(n_clothoid);
+            Y.resize(n_clothoid);
+            Clothoid::pointsOnClothoid(waypoints_x[i], waypoints_y[i], waypoints_angle[i],
+                                       k, dk, L, n_clothoid,
+                                       X, Y);
+
+            _length += L;
+
+            if (i == 0)
+            {
+                // For the first one insert the full clothoid
+                _x.insert(_x.end(), X.begin(), X.end()); // Only take the first n_clothoid points!
+                _y.insert(_y.end(), Y.begin(), Y.end());
+            }
+            else
+            {
+                // Afterwards, insert all except for the duplicate initial point
+                _x.insert(_x.end(), X.begin() + 1, X.end());
+                _y.insert(_y.end(), Y.begin() + 1, Y.end());
+            }
+
+            for (int j = 1; j < n_clothoid; j++) // Add distances
+                _s.push_back(last_s + L / (n_clothoid - 1) * j);
+            last_s = _s.back();
+        }
+    }
+
 }

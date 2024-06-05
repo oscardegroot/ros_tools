@@ -7,6 +7,26 @@
 
 namespace RosTools
 {
+
+    class Clothoid2D
+    {
+    public:
+        Clothoid2D(std::vector<double> &waypoints_x, std::vector<double> &waypoints_y, std::vector<double> &waypoints_angle,
+                   double sample_distance);
+
+    public:
+        void getPointsOnClothoid(std::vector<double> &x, std::vector<double> &y, std::vector<double> &s) const;
+
+        double getLength() const { return _length; }
+
+    private:
+        double _length{0.};
+        std::vector<double> _x, _y, _s;
+
+        void fitClothoid(std::vector<double> &waypoints_x, std::vector<double> &waypoints_y, std::vector<double> &waypoints_angle,
+                         double sample_distance);
+    };
+
     class Spline2D
     {
 
@@ -146,6 +166,7 @@ namespace RosTools
 
         double findClosestSRecursively(const SplineVector &point, double low, double high, int num_recursions) const;
     };
+
 }
 
 #endif // MPC_PLANNER_UTIL_SPLINE_H
