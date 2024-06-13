@@ -64,6 +64,7 @@ inline void __RCLCPP_INFO_STREAM_THROTTLE(const double rate, const std::string &
 #define LOG_VALUE(name, value) LOG_INFO("\033[1m" << name << ":\033[0m " << value)
 #define LOG_VALUE_DEBUG(name, value) LOG_DEBUG("\033[1m" << name << ":\033[0m " << value)
 #define LOG_DIVIDER() LOG_INFO("========================================")
+#define LOG_HEADER(msg) LOG_INFO("=============== " << msg << " ================")
 
 #define LOG_HOOK() LOG_INFO(__FILE__ << ":" << __LINE__);
 #define LOG_HOOK_MSG(msg) LOG_INFO(__FILE__ << ":" << __LINE__ << " " << msg);
