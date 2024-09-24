@@ -1,3 +1,6 @@
+[![ROS1 - Build](https://github.com/oscardegroot/ros_tools/actions/workflows/ros1.yml/badge.svg)](https://github.com/oscardegroot/ros_tools/actions/workflows/ros1.yml)
+[![ROS2 - Build](https://github.com/oscardegroot/ros_tools/actions/workflows/ros2.yml/badge.svg)](https://github.com/oscardegroot/ros_tools/actions/workflows/ros2.yml)
+
 # ROS Tools
 This package is a tool package for ROS/ROS2 that standardizes and simplifies basic features over ROS/ROS2.
 
