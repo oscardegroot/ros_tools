@@ -4,6 +4,9 @@
 # ROS Tools
 This package is a tool package for ROS/ROS2 that standardizes and simplifies basic features over ROS/ROS2.
 
+<img src="docs/example.png" width="80%">
+
+
 ## Table of Contents
 1. [Features](#features) 
 2. [Installation](#installation) 
@@ -53,19 +56,23 @@ ros2 launch ros_tools example_py.launch.py
 ---
 ## Examples
 
+A ROS1 example is provided in `src/example.cpp`. Run the example with `ros launch ros1_example.launch`.
+
+You should see the following in `rviz`:
+
+<img src="docs/example.png" alt="example" width="80%"/>
+
 ### Visualization
-We provide wrappers for visualization that simplifies drawing markers in rviz. For example, to draw a cube the following code is sufficient.
+The visualization wrappers for RViz are provided in `ros_tools/visuals.h`. For example, the following code draws a cube at the origin on the topic `ros_tools/example`:
 
 ```cpp
-auto& cube = marker_publisher.getNewPointMarker("CUBE");
-cube.setColorInt(0, 5); // Color by index
-cube.setScale(0.25, 0.25, 0.25); // Scale in all directions
-cube.addPointMarker(Eigen::Vector3d(0., 0., 0.)); // Cube position
+        auto &publisher = VISUALS.getPublisher("ros_tools/example");
+        auto &cube = publisher.getNewPointMarker("CUBE");
+        cube.setColorInt(0, 5);                           
+        cube.setScale(0.25, 0.25, 0.25);                 
+        cube.addPointMarker(Eigen::Vector3d(0., 0., 0.)); 
+        publisher.publish()
 ```
-
-When running the example, you should see the following in `rviz`/`rviz2`:
-
-<img src="docs/example.png" alt="example" width="400"/>
 
 ---
 
@@ -74,15 +81,14 @@ This package provides useful commands for logging/debugging.
 
 - `ROSTOOLS_HOOK` prints the line and file where it is in the terminal and can be clicked in `VSCode`. 
 - `ROSTOOLS_ASSERT` prints its line and file when the assert fails.
-- `LOG_INFO` logs info messages
-
+- `LOG_INFO`, `LOG_WARN`, `LOG_ERROR`, `LOG_SUCCESS` logs info messages
 
 ### Profiling
 Profiling output is stored in the package that is selected in its initialization (see the example). To view the output, open chrome and go to `chrome://tracing/`. Click load in the top left and navigate and select `<your_package>/profiler.json`.
 
-The output should be as follows:
+The output of the example is the following:
 
-<img src="docs/profiling_example.png" alt="example" width="800"/>
+<img src="docs/profiling.png" alt="example" width="100%"/>
 
 ---
 

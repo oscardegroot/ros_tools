@@ -6,17 +6,19 @@
 
 int main(int argc, char **argv)
 {
+    PROFILE_FUNCTION();
     // Initialize the ROS system
     ros::init(argc, argv, "rostools_example");
 
     ros::NodeHandle nh;
 
     VISUALS.init(&nh);
+    RosTools::Instrumentor::Get().BeginSession("ros_tools");
 
     ros::Rate rate(1.);
     while (ros::ok())
     {
-        PROFILE_SCOPE();
+        PROFILE_SCOPE("Loop");
         auto &publisher = VISUALS.getPublisher("ros_tools/example");
         auto &cube = publisher.getNewPointMarker("CUBE");
         cube.setColorInt(0, 5);                           // Color by index 0 out of 5
@@ -39,9 +41,13 @@ int main(int argc, char **argv)
         line.setColor(0., 1., 0., 1.0);
         line.addLine(Eigen::Vector2d(2., 0.), Eigen::Vector2d(2., 5.), 1.);
 
-        auto &model = publisher.getNewModelMarker("package://ros_tools/models/walking.dae");
-        model.setColorInt(1, 5);
-        model.addPointMarker(Eigen::Vector3d(3., 0., 0.0));
+        {
+            PROFILE_SCOPE("Model Visual");
+
+            auto &model = publisher.getNewModelMarker("package://ros_tools/models/walking.dae");
+            model.setColorInt(1, 5);
+            model.addPointMarker(Eigen::Vector3d(3., 0., 0.0));
+        }
 
         auto &text = publisher.getNewTextMarker();
         text.setText("This is an example");
@@ -55,5 +61,7 @@ int main(int argc, char **argv)
         rate.sleep();
     }
 
-    return 0;
+    RosTools::Instrumentor::Get().EndSession();
+
+    return 1;
 }
