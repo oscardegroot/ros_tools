@@ -1,4 +1,4 @@
-name: ROS1 - Build
+name: ROS2 - Build
 
 on: # rebuild any PRs and main branch changes
   pull_request:
@@ -14,7 +14,7 @@ jobs:
       strategy:
         fail-fast: false # uncomment if failing jobs should not cancel the others immediately
         matrix: # matrix is the product of entries
-          ROS_DISTRO: [noetic]
+          ROS_DISTRO: [humble]
           ROS_REPO: [main]
       steps:
         - uses: actions/checkout@v4 # clone target repository
@@ -22,4 +22,4 @@ jobs:
           env: # either pass all entries explicitly
             ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
             ROS_REPO: ${{ matrix.ROS_REPO }}
-            # BEFORE_INSTALL_TARGET_DEPENDENCIES: cd /root/target_ws/src/ros_tools && python3 switch_to_ros.py 2
+            BEFORE_INSTALL_TARGET_DEPENDENCIES: cd /root/target_ws/src/ros_tools && python3 switch_to_ros.py 2
