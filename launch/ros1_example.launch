@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <node pkg="ros_tools" type="example" name="example" respawn="false" output="screen"/>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ros_tools)/rviz/ros1.rviz" output="log"/>
+
+</launch>  

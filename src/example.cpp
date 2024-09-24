@@ -1,36 +1,59 @@
 #include "ros/ros.h"
 
 #include <ros_tools/visuals.h>
+#include <ros_tools/logging.h>
+#include <ros_tools/profiling.h>
 
 int main(int argc, char **argv)
 {
     // Initialize the ROS system
     ros::init(argc, argv, "rostools_example");
 
-    VISUALS.init();
-    auto &publisher = VISUALS.getPublisher("ros_tools/example");
-    auto &cube = publisher.getNewPointMarker("CUBE");
-    cube.setColorInt(0, 5);                           // Color by index 0 out of 5
-    cube.setScale(0.25, 0.25, 0.25);                  // Scale in all directions
-    cube.addPointMarker(Eigen::Vector3d(0., 0., 0.)); // Cube position
+    ros::NodeHandle nh;
 
-    auto &line = publisher.getNewLine();
-    line.setColor(0., 1., 0., 0.8);
-    line.setScale(0.3, 0.3);
-    line.addLine(Eigen::Vector2d(1., 0.), Eigen::Vector2d(1., 5.), 1.);
+    VISUALS.init(&nh);
 
-    auto &model = publisher.getNewModelMarker("package://ros_tools/models/walking.dae");
-    model.setColorInt(1, 5);
-    model.addPointMarker(Eigen::Vector3d(3., 0., 1.0));
+    ros::Rate rate(1.);
+    while (ros::ok())
+    {
+        PROFILE_SCOPE();
+        auto &publisher = VISUALS.getPublisher("ros_tools/example");
+        auto &cube = publisher.getNewPointMarker("CUBE");
+        cube.setColorInt(0, 5);                           // Color by index 0 out of 5
+        cube.setScale(0.25, 0.25, 0.25);                  // Scale in all directions
+        cube.addPointMarker(Eigen::Vector3d(0., 0., 0.)); // Cube position
+        cube.setScale(1.0, 1.0, 1.0);                     // Scale in all directions
+        cube.addPointMarker(Eigen::Vector3d(1., 0., 0.)); // Cube position
 
-    auto &text = publisher.getNewTextMarker();
-    text.setText("This is an example");
-    text.setColorInt(4, 5);
-    text.addPointMarker(Eigen::Vector3d(5., 0., 3.));
+        auto &cylinder = publisher.getNewPointMarker("CYLINDER");
+        cylinder.setScale(0.5, 0.5, 0.3);
+        cylinder.setColorInt(3, 5);
+        cylinder.addPointMarker(Eigen::Vector3d(-1, 0., 2.));
 
-    publisher.publish();
+        auto &line = publisher.getNewLine();
+        line.setScale(0.3, 0.3);
+        line.setColor(0., 1., 0., 0.2);
+        line.addLine(Eigen::Vector2d(0., 0.), Eigen::Vector2d(0., 5.), 1.);
+        line.setColor(0., 1., 0., 0.5);
+        line.addLine(Eigen::Vector2d(1., 0.), Eigen::Vector2d(1., 5.), 1.);
+        line.setColor(0., 1., 0., 1.0);
+        line.addLine(Eigen::Vector2d(2., 0.), Eigen::Vector2d(2., 5.), 1.);
 
-    ros::Duration(5.).sleep();
+        auto &model = publisher.getNewModelMarker("package://ros_tools/models/walking.dae");
+        model.setColorInt(1, 5);
+        model.addPointMarker(Eigen::Vector3d(3., 0., 0.0));
+
+        auto &text = publisher.getNewTextMarker();
+        text.setText("This is an example");
+        text.setColorInt(4, 5);
+        text.addPointMarker(Eigen::Vector3d(5., 0., 3.));
+
+        LOG_INFO("Publish Markers!");
+        publisher.publish();
+        LOG_HOOK();
+
+        rate.sleep();
+    }
 
     return 0;
 }
