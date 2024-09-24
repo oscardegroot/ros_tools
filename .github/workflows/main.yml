@@ -22,5 +22,4 @@ jobs:
           env: # either pass all entries explicitly
             ROS_DISTRO: ${{ matrix.ROS_DISTRO }}
             ROS_REPO: ${{ matrix.ROS_REPO }}
-            TARGET_WORKSPACE: $TARGET_REPO_PATH github:oscardegroot/ros_tools#main
             # BEFORE_INSTALL_TARGET_DEPENDENCIES: cd /root/target_ws/src/ros_tools && python3 switch_to_ros.py 2
