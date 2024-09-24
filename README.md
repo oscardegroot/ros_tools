@@ -2,7 +2,7 @@
 [![ROS2 - Build](https://github.com/oscardegroot/ros_tools/actions/workflows/ros2.yml/badge.svg)](https://github.com/oscardegroot/ros_tools/actions/workflows/ros2.yml)
 
 # ROS Tools
-This package is a tool package for ROS/ROS2 that standardizes and simplifies basic features over ROS/ROS2.
+This package is a tool package for C++ ROS/ROS2 that standardizes and simplifies basic features over ROS/ROS2.
 
 <img src="docs/example.png" width="80%">
 
@@ -41,17 +41,7 @@ rosdep install --from-paths src --ignore-src -r -y
 
 To define its ROS version, run `python3 switch_to_ros.py <ROS_VERSION>`, with `ROS_VERSION` either `1` or `2`.
 
-<!-- For usage with cpp see the [cpp-example](src/example.cpp). To launch the cpp example use
-
-```
-ros2 launch ros_tools example.launch
-```
-
-For usage with python see the [python-example](ros_tools/example_py.py). To launch the cpp example use
-
-```
-ros2 launch ros_tools example_py.launch.py
-``` -->
+Note that a rough python version of the visuals is also provided under `scripts`, but is not actively maintained.
 
 ---
 ## Examples
