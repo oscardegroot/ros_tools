@@ -26,13 +26,14 @@ add_definitions(${EIGEN_DEFINITIONS})
 
 catkin_package(
   CATKIN_DEPENDS ${DEPENDENCIES}
-  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include include/third_party ${EIGEN3_INCLUDE_DIRS}
   LIBRARIES ${PROJECT_NAME}
   DEPENDS EIGEN3
 )
 
 include_directories(
   include
+  include/third_party
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
 )
@@ -61,10 +62,5 @@ install(TARGETS ${PROJECT_NAME}
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  PATTERN ".svn" EXCLUDE
-)
-
-install(DIRECTORY include/third_party/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/third_party
   PATTERN ".svn" EXCLUDE
 )

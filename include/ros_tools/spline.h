@@ -1,7 +1,7 @@
 #ifndef ros_tools_SPLINE_H
 #define ros_tools_SPLINE_H
 
-#include <third_party/tkspline.h>
+#include <tkspline.h>
 
 #include <Eigen/Dense>
 
