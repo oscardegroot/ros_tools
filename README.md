@@ -88,3 +88,4 @@ Data is saved in `ros_tools/scripts/data/example_data.txt`. See the example for 
 ---
 
 ## License
+This project is licensed under the Apache 2.0 license - see the LICENSE file for details.
