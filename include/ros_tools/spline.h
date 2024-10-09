@@ -22,7 +22,11 @@ namespace RosTools
 
         Eigen::Vector2d getVelocity(double t) const;
         Eigen::Vector2d getAcceleration(double t) const;
+        Eigen::Vector2d getJerk(double t) const;
         Eigen::Vector2d getOrthogonal(double t) const;
+        double getYaw(double s) const;
+        double getCurvature(double s) const;
+        double getCurvatureDeriv(double s) const;
 
         void samplePoints(std::vector<Eigen::Vector2d> &points, double ds) const;
         void samplePoints(std::vector<Eigen::Vector2d> &points, std::vector<double> &angles, double ds) const;
@@ -40,6 +44,8 @@ namespace RosTools
         // double getSegmentEnd(int index) const { return _s_vector[index]; };
         double length() const { return _s_vector.back(); }
         double parameterLength() const { return _t_vector.back(); }
+
+
 
         tk::spline &getXSpline() { return _x_spline; }
         tk::spline &getYSpline() { return _y_spline; }

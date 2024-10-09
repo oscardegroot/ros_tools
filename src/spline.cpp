@@ -62,6 +62,41 @@ namespace RosTools
         return Eigen::Vector2d(_x_spline.deriv(2, t), _y_spline.deriv(2, t));
     }
 
+    Eigen::Vector2d Spline2D::getJerk(double t) const
+    {
+        return Eigen::Vector2d(_x_spline.deriv(3, t), _y_spline.deriv(3, t));
+    }
+
+    double Spline2D::getYaw(double t) const
+    {
+        // get dx and dy
+        Eigen::Vector2d first_deriv = getVelocity(t);
+        return atan2(first_deriv(1), first_deriv(0));
+    }
+
+    double Spline2D::getCurvature(double t) const
+    {
+        Eigen::Vector2d second_deriv = getAcceleration(t);
+        Eigen::Vector2d first_deriv = getVelocity(t);
+        double k = (second_deriv(1) * first_deriv(0) - second_deriv(0) * first_deriv(1)) / std::pow((first_deriv(0) * first_deriv(0) + first_deriv(1) * first_deriv(1)), 1.5);
+        return k;
+    }
+
+    double Spline2D::getCurvatureDeriv(double t) const
+    {
+        Eigen::Vector2d third_deriv  = getJerk(t);
+        Eigen::Vector2d second_deriv = getAcceleration(t);
+        Eigen::Vector2d first_deriv = getVelocity(t);
+
+        double z = first_deriv(0) * second_deriv(1) - second_deriv(0) * first_deriv(1);
+        double n = std::pow((std::pow(first_deriv(0), 2) + std::pow(first_deriv(1), 2)), 1.5);
+        double z_d = first_deriv(0) * third_deriv(1) - third_deriv(0) * first_deriv(1);
+        double n_d = 1.5 * std::sqrt(std::pow(first_deriv(0), 2) + std::pow(first_deriv(1), 2)) * 2 * (first_deriv(0) * second_deriv(0) + first_deriv(1) * second_deriv(1)) * 1.5;
+        double k_d = (z_d * n - z * n_d) / std::pow(n, 2);
+
+        return k_d;
+    }
+
     Eigen::Vector2d Spline2D::getOrthogonal(double t) const
     {
         return Eigen::Vector2d(_y_spline.deriv(1, t), -_x_spline.deriv(1, t)).normalized();
