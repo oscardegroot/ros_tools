@@ -48,6 +48,21 @@ namespace RosTools
         return result;
     }
 
+    double angularDifference(double angle1, double angle2)
+    {
+        double diff = std::fmod(angle2 - angle1, 2 * M_PI);
+
+        if (diff > M_PI)
+        {
+            diff -= 2 * M_PI; // Shift difference to be within [-pi, pi]
+        }
+        else if (diff < -M_PI)
+        {
+            diff += 2 * M_PI;
+        }
+        return diff;
+    }
+
     double Bisection(double low, double high, std::function<double(double)> func, double tol)
     {
         if (low > high)

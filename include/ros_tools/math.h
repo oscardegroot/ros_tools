@@ -17,8 +17,14 @@ namespace RosTools
 
     double Bisection(double low, double high, std::function<double(double)> func, double tol = 1e-3);
 
+    /** @brief Haar distance between angle1 and angle2 as a safe version of angle2 - angle1*/
+    double angularDifference(double angle1, double angle2);
+
     template <typename T>
-    int sgn(T val) { return (T(0) < val) - (val < T(0)); }
+    int sgn(T val)
+    {
+        return (T(0) < val) - (val < T(0));
+    }
 
     /**
      * @brief Interpolate a variable linearly between lower and upper by a representative variable "value" that moves
