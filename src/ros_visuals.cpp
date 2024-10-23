@@ -764,6 +764,16 @@ namespace RosTools
 
         // We allocate space for the markers in initialization
         marker_list_.markers.reserve(max_size);
+
+        // Clear any left-over markers
+        visualization_msgs::msg::MarkerArray remove_all_marker_list;
+        visualization_msgs::msg::Marker remove_all_marker;
+        remove_all_marker.action = visualization_msgs::msg::Marker::DELETEALL;
+        remove_all_marker.header.frame_id = frame_id_;
+        remove_all_marker.header.stamp = rclcpp::Clock().now();
+        remove_all_marker_list.markers.emplace_back(remove_all_marker);
+        pub_->publish(remove_all_marker_list);
+
         // ros_markers_.reserve(max_size); // Should not reserve this. It contains only the ROSMarkers which is small in size
         // prev_marker_list_.markers.reserve(max_size);
 
@@ -850,10 +860,13 @@ namespace RosTools
 
     void ROSMarkerPublisher::publish(bool keep_markers)
     {
+
+
         // If less markers are published, remove the extra markers explicitly
         visualization_msgs::msg::Marker remove_marker_;
         remove_marker_.action = visualization_msgs::msg::Marker::DELETE;
         remove_marker_.header.frame_id = frame_id_;
+        remove_marker_.header.stamp = rclcpp::Clock().now();
 
         if (prev_id_ > id_)
         {
