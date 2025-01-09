@@ -189,7 +189,7 @@ namespace RosTools
     template <class T>
     bool LoadData(const std::string &file_name, std::map<std::string, std::vector<T>> &result)
     {
-      const std::string path = getPackagePath("mpc-planner") + "/data/";
+      const std::string path = getPackagePath("mpc_planner") + "/data/";
       return LoadData(path, file_name, result);
     }
 
